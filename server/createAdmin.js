@@ -6,9 +6,17 @@ import Admin from "./models/Admin.js";
 dotenv.config();
 
 export const createAdmin = async () => {
-  await mongoose.connect(process.env.MONGODB_URI);
+  try {
+    // Wait for mongoose connection to be ready
+    if (mongoose.connection.readyState !== 1) {
+      console.log("Waiting for MongoDB connection...");
+      await new Promise(resolve => {
+        if (mongoose.connection.readyState === 1) resolve();
+        else mongoose.connection.once('connected', resolve);
+      });
+    }
 
-  const existingAdmin = await Admin.findOne({ email: "admin@gmail.com" });
+    const existingAdmin = await Admin.findOne({ email: "admin@gmail.com" });
   if (existingAdmin) {
     console.log("Admin already exists");
     return;
@@ -23,4 +31,7 @@ export const createAdmin = async () => {
   });
 
   console.log("Admin created successfully");
+  } catch (error) {
+    console.error("Error creating admin:", error.message);
+  }
 };

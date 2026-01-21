@@ -10,7 +10,7 @@ import { createAdmin } from "./createAdmin.js";
 
 dotenv.config();
 
-// Connect to database first, then create admin
+
 connectDB().then(() => {
   createAdmin();
 }).catch(err => {

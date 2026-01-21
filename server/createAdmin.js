@@ -7,7 +7,7 @@ dotenv.config();
 
 export const createAdmin = async () => {
   try {
-    // Wait for mongoose connection to be ready
+    
     if (mongoose.connection.readyState !== 1) {
       console.log("Waiting for MongoDB connection...");
       await new Promise(resolve => {

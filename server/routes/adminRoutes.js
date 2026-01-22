@@ -31,7 +31,7 @@ router.post("/login", async (req, res) => {
   });
 });
 
-// admin creates  newuser
+
 router.post("/create-user", async (req, res) => {
   try {
     const authHeader = req.headers.authorization || "";

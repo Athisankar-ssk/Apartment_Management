@@ -84,7 +84,7 @@ router.get("/:id", verifyToken, async (req, res) => {
   }
 });
 
-// Admin updates complaint status
+// Admin updates complaint statu
 router.patch("/:id/status", verifyToken, async (req, res) => {
   try {
     const { status } = req.body;

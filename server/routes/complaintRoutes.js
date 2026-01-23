@@ -80,7 +80,7 @@ router.get("/:id", verifyToken, async (req, res) => {
     res.json({ complaint });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ message: "Failed to fetch complaint details" });
+    res.status(500).json({ message: "Failed to fetch complaint detail" });
   }
 });
 

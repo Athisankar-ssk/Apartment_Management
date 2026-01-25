@@ -67,7 +67,7 @@ router.get("/all", verifyToken, async (req, res) => {
   }
 });
 
-// Admin gets single complaint detail
+// Admin gets single complaint details
 router.get("/:id", verifyToken, async (req, res) => {
   try {
     const complaint = await Complaint.findById(req.params.id)

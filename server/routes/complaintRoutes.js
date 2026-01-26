@@ -74,7 +74,7 @@ router.get("/:id", verifyToken, async (req, res) => {
       .populate("userId", "name email userId apartmentNumber mobile");
     
     if (!complaint) {
-      return res.status(404).json({ message: "Complaints not found" });
+      return res.status(404).json({ message: "Complaint not found" });
     }
 
     res.json({ complaint });

@@ -30,7 +30,7 @@ export const createAdmin = async () => {
     password: hashedPassword
   });
 
-  console.log("Admin created successfullys");
+  console.log("Admin created successfully");
   } catch (error) {
     console.error("Error creating admin:", error.message);
   }

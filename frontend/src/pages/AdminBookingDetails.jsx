@@ -120,7 +120,7 @@ function AdminBookingDetails() {
       <Navbar />
       <div className="admin-dashboard">
         <header className="admin-header">
-          <h1>Booking Details</h1>
+          <h1>Booking Details.</h1>
         </header>
 
         {/* Tab Navigation */}

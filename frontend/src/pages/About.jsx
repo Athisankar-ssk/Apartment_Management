@@ -8,7 +8,7 @@ function About() {
       <Navbar />
       <div className="page-container">
         <h1>About</h1>
-        <p>About this apartment management app.</p>
+        <p>About this apartment management app</p>
       </div>
     </>
   );

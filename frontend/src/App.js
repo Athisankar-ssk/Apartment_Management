@@ -24,6 +24,8 @@ import ComplaintStatus from "./pages/ComplaintStatus";
 import LetterCourier from "./pages/LetterCourier";
 import PlaygroundBooking from "./pages/PlaygroundBooking";
 import PartyHallBooking from "./pages/PartyHallBooking";
+import SwimmingPoolBooking from "./pages/SwimmingPoolBooking";
+import MeetingHallBooking from "./pages/MeetingHallBooking";
 import AdminBookingDetails from "./pages/AdminBookingDetails";
 
 function App() {
@@ -47,6 +49,8 @@ function App() {
         <Route path="/user/services/letter-courier" element={<LetterCourier />} />
         <Route path="/user/booking/playground" element={<PlaygroundBooking />} />
         <Route path="/user/booking/partyhall" element={<PartyHallBooking />} />
+        <Route path="/user/booking/swimming-pool" element={<SwimmingPoolBooking />} />
+        <Route path="/user/booking/meeting-hall" element={<MeetingHallBooking />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />

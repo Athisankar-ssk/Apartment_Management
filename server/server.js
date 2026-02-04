@@ -7,6 +7,8 @@ import userRoutes from "./routes/userRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import playgroundRoutes from "./routes/playgroundRoutes.js";
 import partyHallRoutes from "./routes/partyHallRoutes.js";
+import swimmingPoolRoutes from "./routes/swimmingPoolRoutes.js";
+import meetingHallRoutes from "./routes/meetingHallRoutes.js";
 import { createAdmin } from "./createAdmin.js";
 
 
@@ -29,6 +31,8 @@ app.use("/api/user", userRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/playground", playgroundRoutes);
 app.use("/api/partyhall", partyHallRoutes);
+app.use("/api/swimming-pool", swimmingPoolRoutes);
+app.use("/api/meeting-hall", meetingHallRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });

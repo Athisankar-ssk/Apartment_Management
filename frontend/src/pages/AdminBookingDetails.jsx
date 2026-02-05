@@ -35,7 +35,7 @@ function AdminBookingDetails() {
       setLoading(true);
       const token = localStorage.getItem("adminToken");
       
-      // Fetch playground bookings
+      // Fetch playground booking
       const playgroundRes = await axios.get(
         "http://localhost:5000/api/playground/admin/all-bookings",
         { headers: { Authorization: `Bearer ${token}` } }

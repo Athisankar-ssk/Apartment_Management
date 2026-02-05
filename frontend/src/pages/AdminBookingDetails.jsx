@@ -16,7 +16,7 @@ function AdminBookingDetails() {
   const [activeTab, setActiveTab] = useState("playground");
 
   useEffect(() => {
-    // Check if admin is logged in
+    // Check if admin is logged 
     const adminToken = localStorage.getItem("adminToken");
     if (!adminToken) {
       navigate("/admin/login");

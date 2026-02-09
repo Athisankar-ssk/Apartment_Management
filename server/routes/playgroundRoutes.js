@@ -2,6 +2,7 @@ import express from 'express';
 import PlaygroundBooking from '../models/PlaygroundBooking.js';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { canCancelBefore } from '../utils/cancellation.js';
 
 const router = express.Router();
 
@@ -178,6 +179,11 @@ router.delete('/cancel/:bookingId', authenticateUser, async (req, res) => {
 
     if (!booking) {
       return res.status(404).json({ message: 'Booking not found' });
+    }
+
+    // Allow cancellation only if it's at least 20 minutes before slot start
+    if (!canCancelBefore(booking.date, booking.startTime, 20)) {
+      return res.status(400).json({ message: 'Cancel only before 20 minutes of slot time' });
     }
 
     booking.status = 'cancelled';

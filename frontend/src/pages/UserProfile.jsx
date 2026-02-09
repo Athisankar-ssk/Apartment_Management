@@ -12,6 +12,8 @@ function UserProfile() {
   const [formData, setFormData] = useState({});
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [photoPreview, setPhotoPreview] = useState(null);
+  const [photoFile, setPhotoFile] = useState(null);
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -38,6 +40,7 @@ function UserProfile() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUser(res.data);
+      setPhotoPreview(res.data.profilePicture || null);
       setFormData({
         name: res.data.name || "",
         mobile: res.data.mobile || "",
@@ -84,6 +87,8 @@ function UserProfile() {
 
   const handleCancel = () => {
     setEditing(false);
+    setPhotoPreview(user.profilePicture || null);
+    setPhotoFile(null);
     // Reset form data to original user data
     setFormData({
       name: user.name || "",
@@ -101,6 +106,39 @@ function UserProfile() {
     });
   };
 
+  const handlePhotoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      // Validate file type
+      if (!file.type.startsWith('image/')) {
+        setErrorMessage('Please select an image file');
+        setTimeout(() => setErrorMessage(""), 3000);
+        return;
+      }
+      
+      // Validate file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        setErrorMessage('Image size must be less than 2MB');
+        setTimeout(() => setErrorMessage(""), 3000);
+        return;
+      }
+      
+      setPhotoFile(file);
+      
+      // Create preview
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setPhotoPreview(reader.result);
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleRemovePhoto = () => {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -114,12 +152,24 @@ function UserProfile() {
         return;
       }
       
+      const dataToSend = { ...formData };
+      
+      // If a new photo was selected, include it
+      if (photoFile) {
+        dataToSend.profilePicture = photoPreview;
+      } else if (photoPreview === null && user.profilePicture) {
+        // User removed the photo
+        dataToSend.profilePicture = '';
+      }
+      
       const res = await axios.put(
         "http://localhost:5000/api/user/profile",
-        formData,
+        dataToSend,
         { headers: { Authorization: `Bearer ${token}` } }
       );
       setUser(res.data.user);
+      setPhotoPreview(res.data.user.profilePicture || null);
+      setPhotoFile(null);
       setSuccessMessage("Profile updated successfully");
       setEditing(false);
       setTimeout(() => setSuccessMessage(""), 3000);
@@ -159,7 +209,11 @@ function UserProfile() {
         <div className="profile-container">
           <div className="profile-header">
             <div className="profile-avatar">
-              {user.name?.charAt(0).toUpperCase()}
+              {photoPreview ? (
+                <img src={photoPreview} alt="Profile" className="profile-avatar-img" />
+              ) : (
+                user.name?.charAt(0).toUpperCase()
+              )}
             </div>
             <div className="profile-info">
               <h1>{user.name}</h1>
@@ -191,6 +245,45 @@ function UserProfile() {
             </div>
 
             <form onSubmit={handleSubmit} className="profile-form">
+              {editing && (
+                <div className="photo-upload-section">
+                  <label className="photo-upload-label">Profile Photo</label>
+                  <div className="photo-upload-container">
+                    <div className="photo-preview">
+                      {photoPreview ? (
+                        <img src={photoPreview} alt="Preview" className="preview-img" />
+                      ) : (
+                        <div className="preview-placeholder">
+                          <span>No Photo</span>
+                        </div>
+                      )}
+                    </div>
+                    <div className="photo-upload-actions">
+                      <input
+                        type="file"
+                        id="photo-upload"
+                        accept="image/*"
+                        onChange={handlePhotoChange}
+                        style={{ display: 'none' }}
+                      />
+                      <label htmlFor="photo-upload" className="upload-btn">
+                        {photoPreview ? 'Change Photo' : 'Upload Photo'}
+                      </label>
+                      {photoPreview && (
+                        <button
+                          type="button"
+                          className="remove-photo-btn"
+                          onClick={handleRemovePhoto}
+                        >
+                          Remove Photo
+                        </button>
+                      )}
+                      <p className="photo-hint">JPG, PNG or GIF (Max 2MB)</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               <div className="form-grid">
                 <div className="form-group">
                   <label>Full Name</label>

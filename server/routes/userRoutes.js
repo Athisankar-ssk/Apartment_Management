@@ -88,25 +88,33 @@ router.put("/profile", async (req, res) => {
       occupation,
       numberOfFamilyMembers,
       vehicleDetails,
-      address
+      address,
+      profilePicture
     } = req.body;
+
+    const updateData = { 
+      name, 
+      mobile, 
+      dateOfBirth, 
+      gender, 
+      alternateMobile, 
+      emergencyContactName, 
+      emergencyContactNumber, 
+      emergencyContactRelation,
+      occupation,
+      numberOfFamilyMembers,
+      vehicleDetails,
+      address
+    };
+
+    // Only update profilePicture if it's provided in the request
+    if (profilePicture !== undefined) {
+      updateData.profilePicture = profilePicture;
+    }
 
     const user = await User.findByIdAndUpdate(
       decoded.id,
-      { 
-        name, 
-        mobile, 
-        dateOfBirth, 
-        gender, 
-        alternateMobile, 
-        emergencyContactName, 
-        emergencyContactNumber, 
-        emergencyContactRelation,
-        occupation,
-        numberOfFamilyMembers,
-        vehicleDetails,
-        address
-      },
+      updateData,
       { new: true }
     ).select("-password");
 

@@ -2,6 +2,7 @@ import express from 'express';
 import PartyHallBooking from '../models/PartyHallBooking.js';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { canCancelBefore } from '../utils/cancellation.js';
 
 const router = express.Router();
 
@@ -177,15 +178,21 @@ router.delete('/cancel/:bookingId', authenticateUser, async (req, res) => {
       return res.status(400).json({ message: 'Booking is already cancelled' });
     }
 
-    // Check if cancellation is within 1 day (24 hours) of booking creation
-    const now = new Date();
-    const bookingCreatedAt = new Date(booking.createdAt);
-    const hoursSinceBooking = (now - bookingCreatedAt) / (1000 * 60 * 60);
-    
-    if (hoursSinceBooking > 24) {
-      return res.status(400).json({ 
-        message: 'Cancellation period expired. Bookings can only be cancelled within 1 day of booking.' 
-      });
+    // Map party hall time slot to its start time
+    const slotStartMap = {
+      'Morning (9 AM - 1 PM)': '09:00',
+      'Afternoon (2 PM - 6 PM)': '14:00',
+      'Evening (7 PM - 11 PM)': '19:00'
+    };
+
+    const startTime = slotStartMap[booking.timeSlot];
+    if (!startTime) {
+      return res.status(400).json({ message: 'Invalid time slot for cancellation' });
+    }
+
+    // Allow cancellation only if it's at least 20 minutes before slot start
+    if (!canCancelBefore(booking.date, startTime, 20)) {
+      return res.status(400).json({ message: 'Cancel only before 20 minutes of slot time' });
     }
 
     booking.status = 'cancelled';

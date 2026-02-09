@@ -187,6 +187,7 @@ function UserManagement() {
             <table className="users-table">
               <thead>
                 <tr>
+                  <th>Photo</th>
                   <th>Name</th>
                   <th>Email</th>
                   <th>User ID</th>
@@ -200,6 +201,15 @@ function UserManagement() {
                   <tr key={user._id} className={editingId === user._id ? "editing" : ""}>
                     {editingId === user._id ? (
                       <>
+                        <td>
+                          <div className="user-photo-cell">
+                            {user.profilePicture ? (
+                              <img src={user.profilePicture} alt="Profile" className="user-photo" />
+                            ) : (
+                              <div className="user-photo-placeholder">{user.name?.charAt(0).toUpperCase()}</div>
+                            )}
+                          </div>
+                        </td>
                         <td>
                           <input
                             type="text"
@@ -262,6 +272,15 @@ function UserManagement() {
                       </>
                     ) : (
                       <>
+                        <td>
+                          <div className="user-photo-cell">
+                            {user.profilePicture ? (
+                              <img src={user.profilePicture} alt="Profile" className="user-photo" />
+                            ) : (
+                              <div className="user-photo-placeholder">{user.name?.charAt(0).toUpperCase()}</div>
+                            )}
+                          </div>
+                        </td>
                         <td>{user.name}</td>
                         <td>{user.email}</td>
                         <td>{user.userId}</td>
@@ -304,6 +323,20 @@ function UserManagement() {
                 <button className="close-modal" onClick={handleCloseFullDetails}>×</button>
               </div>
               <div className="modal-body">
+                <div className="user-profile-photo-section">
+                  <div className="user-profile-photo">
+                    {viewingUser.profilePicture ? (
+                      <img src={viewingUser.profilePicture} alt="Profile" className="profile-photo-img" />
+                    ) : (
+                      <div className="profile-photo-placeholder">{viewingUser.name?.charAt(0).toUpperCase()}</div>
+                    )}
+                  </div>
+                  <div className="user-profile-name">
+                    <h3>{viewingUser.name}</h3>
+                    <p className="user-id-badge">{viewingUser.userId}</p>
+                  </div>
+                </div>
+
                 <div className="form-section">
                   <h3>Basic Information</h3>
                   <div className="form-row">

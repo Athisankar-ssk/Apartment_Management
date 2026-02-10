@@ -28,7 +28,7 @@ function Navbar() {
 
         <div className="navbar-actions">
           {/* Show Dashboard and Complaints on admin pages */}
-          {adminToken && (location.pathname === '/admin/dashboard' || location.pathname === '/admin/create-account' || location.pathname === '/complaints' || location.pathname === '/user-management' || location.pathname === '/admin/booking-details') && (
+          {adminToken && (location.pathname === '/admin/dashboard' || location.pathname === '/admin/create-account' || location.pathname === '/complaints' || location.pathname === '/user-management' || location.pathname === '/admin/booking-details' || location.pathname === '/admin/billing') && (
             <>
               <Link to="/admin/dashboard" className={`nav-link ${location.pathname === '/admin/dashboard' ? 'active' : ''}`}>
                 Dashboard
@@ -41,6 +41,9 @@ function Navbar() {
               </Link>
               <Link to="/admin/booking-details" className={`nav-link ${location.pathname === '/admin/booking-details' ? 'active' : ''}`}>
                 Booking Details
+              </Link>
+              <Link to="/admin/billing" className={`nav-link ${location.pathname === '/admin/billing' ? 'active' : ''}`}>
+                Billing
               </Link>
             </>
           )}

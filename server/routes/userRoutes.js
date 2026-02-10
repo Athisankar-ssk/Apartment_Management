@@ -25,6 +25,27 @@ router.post("/login", async (req, res) => {
   }
 });
 
+// Get all users (for admin)
+router.get("/all", async (req, res) => {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.split(" ")[1];
+    
+    if (!token) {
+      return res.status(401).json({ message: "No token provided" });
+    }
+
+    // Verify admin token
+    jwt.verify(token, process.env.JWT_SECRET);
+
+    const users = await User.find().select("-password").sort({ name: 1 });
+    res.json(users);
+  } catch (err) {
+    console.error("Error fetching users:", err);
+    res.status(500).json({ message: "Server error: " + err.message });
+  }
+});
+
 // Get current user's profile
 router.get("/profile", async (req, res) => {
   try {

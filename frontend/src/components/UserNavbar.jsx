@@ -89,6 +89,9 @@ function UserNavbar() {
             </button>
             {showServicesDropdown && (
               <div className="dropdown-menu">
+                <button className="dropdown-item" onClick={() => navigate('/user/services/maintenance-bills')}>
+                  Maintenance Bills
+                </button>
                 <button className="dropdown-item" onClick={() => navigate('/user/services/electricity-bill')}>
                   Electricity Bill
                 </button>

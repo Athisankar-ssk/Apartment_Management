@@ -27,6 +27,9 @@ import PartyHallBooking from "./pages/PartyHallBooking";
 import SwimmingPoolBooking from "./pages/SwimmingPoolBooking";
 import MeetingHallBooking from "./pages/MeetingHallBooking";
 import AdminBookingDetails from "./pages/AdminBookingDetails";
+import Billing from "./pages/Billing";
+import UserElectricityBilling from "./pages/UserElectricityBilling";
+import UserMaintenanceBilling from "./pages/UserMaintenanceBilling";
 
 function App() {
   return (
@@ -44,13 +47,15 @@ function App() {
         <Route path="/user/grievance/cleaning" element={<CleaningComplaint />} />
         <Route path="/user/grievance/lift" element={<LiftComplaint />} />
         <Route path="/user/grievance/other" element={<OtherComplaint />} />
-        <Route path="/user/services/electricity-bill" element={<ElectricityBill />} />
+        <Route path="/user/services/electricity-bill" element={<UserElectricityBilling />} />
         <Route path="/user/services/complaint-status" element={<ComplaintStatus />} />
         <Route path="/user/services/letter-courier" element={<LetterCourier />} />
         <Route path="/user/booking/playground" element={<PlaygroundBooking />} />
         <Route path="/user/booking/partyhall" element={<PartyHallBooking />} />
         <Route path="/user/booking/swimming-pool" element={<SwimmingPoolBooking />} />
         <Route path="/user/booking/meeting-hall" element={<MeetingHallBooking />} />
+        <Route path="/user/billing/electricity" element={<UserElectricityBilling />} />
+        <Route path="/user/services/maintenance-bills" element={<UserMaintenanceBilling />} />
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
@@ -58,6 +63,7 @@ function App() {
         <Route path="/admin/create-account" element={<CreateAccount />} />
         <Route path="/admin/complaint/:id" element={<ComplaintDetails />} />
         <Route path="/admin/booking-details" element={<AdminBookingDetails />} />
+        <Route path="/admin/billing" element={<Billing />} />
       </Routes>
     </BrowserRouter>
   );

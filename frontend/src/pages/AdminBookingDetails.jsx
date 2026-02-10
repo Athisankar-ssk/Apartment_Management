@@ -208,7 +208,7 @@ function AdminBookingDetails() {
             </div>
 
             {loading ? (
-              <p style={{ color: "#64748b" }}>Loading bookings...</p>
+              <p style={{ color: "#64748b" }}>Loading bookings..</p>
             ) : activeTab === "playground" ? (
               // Playground Bookings Table
               filteredPlaygroundBookings.length === 0 ? (

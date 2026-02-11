@@ -337,7 +337,7 @@ function AdminBookingDetails() {
                     ? filteredPlaygroundBookings.filter((b) => b.status === "cancelled").length
                     : filteredPartyHallBookings.filter((b) => b.status === "cancelled").length}
                 </div>
-                <div style={{ fontSize: "0.875rem", color: "#64748b" }}>Cacelled</div>
+                <div style={{ fontSize: "0.875rem", color: "#64748b" }}>Cancelled</div>
               </div>
             </div>
           </div>

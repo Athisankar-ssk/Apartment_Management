@@ -126,6 +126,9 @@ function UserNavbar() {
                 <button className="dropdown-item" onClick={() => navigate('/user/booking/swimming-pool')}>
                   Swimming Pool Booking
                 </button>
+                <button className="dropdown-item" onClick={() => navigate('/user/booking/vehicle-parking')}>
+                  Vehicle Parking Slot Booking
+                </button>
               </div>
             )}
           </div>

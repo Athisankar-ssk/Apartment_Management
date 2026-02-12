@@ -8,8 +8,14 @@ function AdminBookingDetails() {
   const navigate = useNavigate();
   const [playgroundBookings, setPlaygroundBookings] = useState([]);
   const [partyHallBookings, setPartyHallBookings] = useState([]);
+  const [meetingHallBookings, setMeetingHallBookings] = useState([]);
+  const [swimmingPoolBookings, setSwimmingPoolBookings] = useState([]);
+  const [vehicleParkingBookings, setVehicleParkingBookings] = useState([]);
   const [filteredPlaygroundBookings, setFilteredPlaygroundBookings] = useState([]);
   const [filteredPartyHallBookings, setFilteredPartyHallBookings] = useState([]);
+  const [filteredMeetingHallBookings, setFilteredMeetingHallBookings] = useState([]);
+  const [filteredSwimmingPoolBookings, setFilteredSwimmingPoolBookings] = useState([]);
+  const [filteredVehicleParkingBookings, setFilteredVehicleParkingBookings] = useState([]);
   const [loading, setLoading] = useState(true);
   const [filterDate, setFilterDate] = useState("");
   const [filterStatus, setFilterStatus] = useState("all");
@@ -28,28 +34,89 @@ function AdminBookingDetails() {
 
   useEffect(() => {
     applyFilters();
-  }, [playgroundBookings, partyHallBookings, filterDate, filterStatus]);
+  }, [playgroundBookings, partyHallBookings, meetingHallBookings, swimmingPoolBookings, vehicleParkingBookings, filterDate, filterStatus]);
 
   const fetchAllBookings = async () => {
     try {
       setLoading(true);
       const token = localStorage.getItem("adminToken");
       
+      if (!token) {
+        navigate("/admin/login");
+        return;
+      }
+
       // Fetch playground bookings
-      const playgroundRes = await axios.get(
-        "http://localhost:5000/api/playground/admin/all-bookings",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setPlaygroundBookings(playgroundRes.data);
+      try {
+        const playgroundRes = await axios.get(
+          "http://localhost:5000/api/playground/admin/all-bookings",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPlaygroundBookings(playgroundRes.data);
+      } catch (error) {
+        console.error("Error fetching playground bookings:", error);
+        if (error.response?.status === 401) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminName");
+          navigate("/admin/login");
+          return;
+        }
+      }
 
       // Fetch party hall bookings
-      const partyHallRes = await axios.get(
-        "http://localhost:5000/api/partyhall/admin/all-bookings",
-        { headers: { Authorization: `Bearer ${token}` } }
-      );
-      setPartyHallBookings(partyHallRes.data);
+      try {
+        const partyHallRes = await axios.get(
+          "http://localhost:5000/api/partyhall/admin/all-bookings",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setPartyHallBookings(partyHallRes.data);
+      } catch (error) {
+        console.error("Error fetching party hall bookings:", error);
+        if (error.response?.status === 401) {
+          localStorage.removeItem("adminToken");
+          localStorage.removeItem("adminName");
+          navigate("/admin/login");
+          return;
+        }
+      }
+
+      // Fetch meeting hall bookings
+      try {
+        const meetingHallRes = await axios.get(
+          "http://localhost:5000/api/meeting-hall/admin/all-bookings",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setMeetingHallBookings(meetingHallRes.data);
+      } catch (error) {
+        console.error("Error fetching meeting hall bookings:", error);
+        // Don't log out on error for this endpoint to prevent accidental logout
+      }
+
+      // Fetch swimming pool bookings
+      try {
+        const swimmingPoolRes = await axios.get(
+          "http://localhost:5000/api/swimming-pool/admin/all-bookings",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setSwimmingPoolBookings(swimmingPoolRes.data);
+      } catch (error) {
+        console.error("Error fetching swimming pool bookings:", error);
+        // Don't log out on error for this endpoint to prevent accidental logout
+      }
+
+      // Fetch vehicle parking bookings
+      try {
+        const vehicleParkingRes = await axios.get(
+          "http://localhost:5000/api/parking/admin/all-bookings",
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+        setVehicleParkingBookings(vehicleParkingRes.data);
+      } catch (error) {
+        console.error("Error fetching vehicle parking bookings:", error);
+        // Don't log out on error for this endpoint to prevent accidental logout
+      }
     } catch (error) {
-      console.error("Error fetching bookings:", error);
+      console.error("Error in fetchAllBookings:", error);
       if (error.response?.status === 401) {
         localStorage.removeItem("adminToken");
         localStorage.removeItem("adminName");
@@ -80,6 +147,33 @@ function AdminBookingDetails() {
       filteredPartyHall = filteredPartyHall.filter((booking) => booking.status === filterStatus);
     }
     setFilteredPartyHallBookings(filteredPartyHall);
+
+    // Filter meeting hall bookings
+    let filteredMeetingHall = [...meetingHallBookings];
+    if (filterDate) {
+      filteredMeetingHall = filteredMeetingHall.filter((booking) => booking.date === filterDate);
+    }
+    if (filterStatus !== "all") {
+      filteredMeetingHall = filteredMeetingHall.filter((booking) => booking.status === filterStatus);
+    }
+    setFilteredMeetingHallBookings(filteredMeetingHall);
+
+    // Filter swimming pool bookings
+    let filteredSwimmingPool = [...swimmingPoolBookings];
+    if (filterDate) {
+      filteredSwimmingPool = filteredSwimmingPool.filter((booking) => booking.date === filterDate);
+    }
+    if (filterStatus !== "all") {
+      filteredSwimmingPool = filteredSwimmingPool.filter((booking) => booking.status === filterStatus);
+    }
+    setFilteredSwimmingPoolBookings(filteredSwimmingPool);
+
+    // Filter vehicle parking bookings
+    let filteredVehicleParking = [...vehicleParkingBookings];
+    if (filterStatus !== "all") {
+      filteredVehicleParking = filteredVehicleParking.filter((booking) => booking.status === filterStatus);
+    }
+    setFilteredVehicleParkingBookings(filteredVehicleParking);
   };
 
   const formatDate = (dateString) => {
@@ -124,7 +218,7 @@ function AdminBookingDetails() {
         </header>
 
         {/* Tab Navigation */}
-        <div style={{ marginBottom: "1.5rem", display: "flex", gap: "1rem", borderBottom: "2px solid #e2e8f0" }}>
+        <div style={{ marginBottom: "1.5rem", display: "flex", gap: "1rem", borderBottom: "2px solid #e2e8f0", overflowX: "auto" }}>
           <button
             onClick={() => setActiveTab("playground")}
             style={{
@@ -137,6 +231,7 @@ function AdminBookingDetails() {
               cursor: "pointer",
               fontSize: "1rem",
               transition: "all 0.2s",
+              whiteSpace: "nowrap",
             }}
           >
             Playground Bookings
@@ -153,9 +248,61 @@ function AdminBookingDetails() {
               cursor: "pointer",
               fontSize: "1rem",
               transition: "all 0.2s",
+              whiteSpace: "nowrap",
             }}
           >
             Party Hall Bookings
+          </button>
+          <button
+            onClick={() => setActiveTab("meetinghall")}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: activeTab === "meetinghall" ? "3px solid #3b82f6" : "3px solid transparent",
+              color: activeTab === "meetinghall" ? "#3b82f6" : "#64748b",
+              fontWeight: activeTab === "meetinghall" ? "600" : "500",
+              cursor: "pointer",
+              fontSize: "1rem",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Meeting Hall Bookings
+          </button>
+          <button
+            onClick={() => setActiveTab("swimmingpool")}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: activeTab === "swimmingpool" ? "3px solid #3b82f6" : "3px solid transparent",
+              color: activeTab === "swimmingpool" ? "#3b82f6" : "#64748b",
+              fontWeight: activeTab === "swimmingpool" ? "600" : "500",
+              cursor: "pointer",
+              fontSize: "1rem",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Swimming Pool Bookings
+          </button>
+          <button
+            onClick={() => setActiveTab("vehicleparking")}
+            style={{
+              padding: "0.75rem 1.5rem",
+              backgroundColor: "transparent",
+              border: "none",
+              borderBottom: activeTab === "vehicleparking" ? "3px solid #3b82f6" : "3px solid transparent",
+              color: activeTab === "vehicleparking" ? "#3b82f6" : "#64748b",
+              fontWeight: activeTab === "vehicleparking" ? "600" : "500",
+              cursor: "pointer",
+              fontSize: "1rem",
+              transition: "all 0.2s",
+              whiteSpace: "nowrap",
+            }}
+          >
+            Vehicle Parking
           </button>
         </div>
 
@@ -172,22 +319,28 @@ function AdminBookingDetails() {
               }}
             >
               <h3 style={{ margin: 0 }}>
-                {activeTab === "playground" ? "Playground Bookings" : "Party Hall Bookings"}
+                {activeTab === "playground" && "Playground Bookings"}
+                {activeTab === "partyhall" && "Party Hall Bookings"}
+                {activeTab === "meetinghall" && "Meeting Hall Bookings"}
+                {activeTab === "swimmingpool" && "Swimming Pool Bookings"}
+                {activeTab === "vehicleparking" && "Vehicle Parking Bookings"}
               </h3>
               <div style={{ display: "flex", gap: "1rem", alignItems: "center", flexWrap: "wrap" }}>
-                <div>
-                  <label style={{ marginRight: "0.5rem", fontSize: "0.875rem" }}>Date:</label>
-                  <input
-                    type="date"
-                    value={filterDate}
-                    onChange={(e) => setFilterDate(e.target.value)}
-                    style={{
-                      padding: "0.5rem",
-                      border: "1px solid #e2e8f0",
-                      borderRadius: "4px",
-                    }}
-                  />
-                </div>
+                {activeTab !== "vehicleparking" && (
+                  <div>
+                    <label style={{ marginRight: "0.5rem", fontSize: "0.875rem" }}>Date:</label>
+                    <input
+                      type="date"
+                      value={filterDate}
+                      onChange={(e) => setFilterDate(e.target.value)}
+                      style={{
+                        padding: "0.5rem",
+                        border: "1px solid #e2e8f0",
+                        borderRadius: "4px",
+                      }}
+                    />
+                  </div>
+                )}
                 <div>
                   <label style={{ marginRight: "0.5rem", fontSize: "0.875rem" }}>Status:</label>
                   <select
@@ -255,7 +408,7 @@ function AdminBookingDetails() {
                   </table>
                 </div>
               )
-            ) : (
+            ) : activeTab === "partyhall" ? (
               // Party Hall Bookings Table
               filteredPartyHallBookings.length === 0 ? (
                 <p style={{ color: "#64748b" }}>No party hall bookings found</p>
@@ -301,6 +454,142 @@ function AdminBookingDetails() {
                   </table>
                 </div>
               )
+            ) : activeTab === "meetinghall" ? (
+              // Meeting Hall Bookings Table
+              filteredMeetingHallBookings.length === 0 ? (
+                <p style={{ color: "#64748b" }}>No meeting hall bookings found</p>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    <thead>
+                      <tr style={{ backgroundColor: "#f8fafc" }}>
+                        <th style={tableHeaderStyle}>Date</th>
+                        <th style={tableHeaderStyle}>Time</th>
+                        <th style={tableHeaderStyle}>User Name</th>
+                        <th style={tableHeaderStyle}>Email</th>
+                        <th style={tableHeaderStyle}>Apartment</th>
+                        <th style={tableHeaderStyle}>Attendees</th>
+                        <th style={tableHeaderStyle}>Status</th>
+                        <th style={tableHeaderStyle}>Booked On</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredMeetingHallBookings.map((booking) => (
+                        <tr key={booking._id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                          <td style={tableCellStyle}>{formatDate(booking.date)}</td>
+                          <td style={tableCellStyle}>
+                            {booking.startTime} - {booking.endTime}
+                          </td>
+                          <td style={tableCellStyle}>{booking.userName}</td>
+                          <td style={tableCellStyle}>{booking.userId?.email || "N/A"}</td>
+                          <td style={tableCellStyle}>{booking.apartmentNumber}</td>
+                          <td style={tableCellStyle}>{booking.numberOfAttendees}</td>
+                          <td style={tableCellStyle}>{getStatusBadge(booking.status)}</td>
+                          <td style={tableCellStyle}>
+                            {new Date(booking.createdAt).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            ) : activeTab === "swimmingpool" ? (
+              // Swimming Pool Bookings Table
+              filteredSwimmingPoolBookings.length === 0 ? (
+                <p style={{ color: "#64748b" }}>No swimming pool bookings found</p>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    <thead>
+                      <tr style={{ backgroundColor: "#f8fafc" }}>
+                        <th style={tableHeaderStyle}>Date</th>
+                        <th style={tableHeaderStyle}>Time</th>
+                        <th style={tableHeaderStyle}>User Name</th>
+                        <th style={tableHeaderStyle}>Email</th>
+                        <th style={tableHeaderStyle}>Apartment</th>
+                        <th style={tableHeaderStyle}>People</th>
+                        <th style={tableHeaderStyle}>Status</th>
+                        <th style={tableHeaderStyle}>Booked On</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredSwimmingPoolBookings.map((booking) => (
+                        <tr key={booking._id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                          <td style={tableCellStyle}>{formatDate(booking.date)}</td>
+                          <td style={tableCellStyle}>
+                            {booking.startTime} - {booking.endTime}
+                          </td>
+                          <td style={tableCellStyle}>{booking.userName}</td>
+                          <td style={tableCellStyle}>{booking.userId?.email || "N/A"}</td>
+                          <td style={tableCellStyle}>{booking.apartmentNumber}</td>
+                          <td style={tableCellStyle}>{booking.numberOfPeople}</td>
+                          <td style={tableCellStyle}>{getStatusBadge(booking.status)}</td>
+                          <td style={tableCellStyle}>
+                            {new Date(booking.createdAt).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
+            ) : (
+              // Vehicle Parking Bookings Table
+              filteredVehicleParkingBookings.length === 0 ? (
+                <p style={{ color: "#64748b" }}>No vehicle parking bookings found</p>
+              ) : (
+                <div style={{ overflowX: "auto" }}>
+                  <table
+                    style={{
+                      width: "100%",
+                      borderCollapse: "collapse",
+                      fontSize: "0.875rem",
+                    }}
+                  >
+                    <thead>
+                      <tr style={{ backgroundColor: "#f8fafc" }}>
+                        <th style={tableHeaderStyle}>Parking Slot</th>
+                        <th style={tableHeaderStyle}>User Name</th>
+                        <th style={tableHeaderStyle}>Email</th>
+                        <th style={tableHeaderStyle}>Apartment</th>
+                        <th style={tableHeaderStyle}>Vehicle Type</th>
+                        <th style={tableHeaderStyle}>Vehicle Number</th>
+                        <th style={tableHeaderStyle}>Status</th>
+                        <th style={tableHeaderStyle}>Allocated On</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {filteredVehicleParkingBookings.map((booking) => (
+                        <tr key={booking._id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                          <td style={tableCellStyle}>{booking.slotName || booking.slotId}</td>
+                          <td style={tableCellStyle}>{booking.userName}</td>
+                          <td style={tableCellStyle}>{booking.userId?.email || "N/A"}</td>
+                          <td style={tableCellStyle}>{booking.apartmentNumber}</td>
+                          <td style={tableCellStyle}>{booking.vehicleType}</td>
+                          <td style={tableCellStyle}>{booking.vehicleNumber}</td>
+                          <td style={tableCellStyle}>{getStatusBadge(booking.status)}</td>
+                          <td style={tableCellStyle}>
+                            {booking.approvedDate ? new Date(booking.approvedDate).toLocaleDateString() : new Date(booking.createdAt).toLocaleDateString()}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              )
             )}
 
             <div
@@ -318,8 +607,14 @@ function AdminBookingDetails() {
               <div style={{ textAlign: "center" }}>
                 <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#1e40af" }}>
                   {activeTab === "playground" 
-                    ? filteredPlaygroundBookings.length 
-                    : filteredPartyHallBookings.length}
+                    ? filteredPlaygroundBookings.length
+                    : activeTab === "partyhall"
+                    ? filteredPartyHallBookings.length
+                    : activeTab === "meetinghall"
+                    ? filteredMeetingHallBookings.length
+                    : activeTab === "swimmingpool"
+                    ? filteredSwimmingPoolBookings.length
+                    : filteredVehicleParkingBookings.length}
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#64748b" }}>Total Bookings</div>
               </div>
@@ -327,7 +622,13 @@ function AdminBookingDetails() {
                 <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#059669" }}>
                   {activeTab === "playground"
                     ? filteredPlaygroundBookings.filter((b) => b.status === "confirmed").length
-                    : filteredPartyHallBookings.filter((b) => b.status === "confirmed").length}
+                    : activeTab === "partyhall"
+                    ? filteredPartyHallBookings.filter((b) => b.status === "confirmed").length
+                    : activeTab === "meetinghall"
+                    ? filteredMeetingHallBookings.filter((b) => b.status === "confirmed").length
+                    : activeTab === "swimmingpool"
+                    ? filteredSwimmingPoolBookings.filter((b) => b.status === "confirmed").length
+                    : filteredVehicleParkingBookings.filter((b) => b.status === "approved").length}
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#64748b" }}>Confirmed</div>
               </div>
@@ -335,7 +636,13 @@ function AdminBookingDetails() {
                 <div style={{ fontSize: "1.5rem", fontWeight: "600", color: "#dc2626" }}>
                   {activeTab === "playground"
                     ? filteredPlaygroundBookings.filter((b) => b.status === "cancelled").length
-                    : filteredPartyHallBookings.filter((b) => b.status === "cancelled").length}
+                    : activeTab === "partyhall"
+                    ? filteredPartyHallBookings.filter((b) => b.status === "cancelled").length
+                    : activeTab === "meetinghall"
+                    ? filteredMeetingHallBookings.filter((b) => b.status === "cancelled").length
+                    : activeTab === "swimmingpool"
+                    ? filteredSwimmingPoolBookings.filter((b) => b.status === "cancelled").length
+                    : filteredVehicleParkingBookings.filter((b) => b.status === "rejected" || b.status === "released").length}
                 </div>
                 <div style={{ fontSize: "0.875rem", color: "#64748b" }}>Cancelled</div>
               </div>
@@ -352,11 +659,12 @@ const tableHeaderStyle = {
   textAlign: "left",
   fontWeight: "600",
   borderBottom: "2px solid #e2e8f0",
-  color: "#475569",
+  color: "rgb(71, 85, 105)",
 };
 
 const tableCellStyle = {
   padding: "0.75rem",
 };
+
 
 export default AdminBookingDetails;

@@ -9,6 +9,7 @@ import playgroundRoutes from "./routes/playgroundRoutes.js";
 import partyHallRoutes from "./routes/partyHallRoutes.js";
 import swimmingPoolRoutes from "./routes/swimmingPoolRoutes.js";
 import meetingHallRoutes from "./routes/meetingHallRoutes.js";
+import parkingRoutes from "./routes/parkingRoutes.js";
 import billingRoutes from "./routes/billingRoutes.js";
 import { createAdmin } from "./createAdmin.js";
 
@@ -34,6 +35,7 @@ app.use("/api/playground", playgroundRoutes);
 app.use("/api/partyhall", partyHallRoutes);
 app.use("/api/swimming-pool", swimmingPoolRoutes);
 app.use("/api/meeting-hall", meetingHallRoutes);
+app.use("/api/parking", parkingRoutes);
 app.use("/api/billing", billingRoutes);
 
 app.get("/api/health", (req, res) => {

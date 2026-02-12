@@ -52,12 +52,7 @@ function SwimmingPoolBooking() {
       console.error("Error fetching slots:", error);
       const errorMessage = error.response?.data?.message || error.message || "Failed to load available slots";
       setMessage({ type: "error", text: errorMessage });
-      
-      if (error.response?.status === 401) {
-        localStorage.removeItem("userToken");
-        localStorage.removeItem("userName");
-        navigate("/user/login");
-      }
+      // Don't auto-logout on error - let user handle it
     } finally {
       setLoading(false);
     }

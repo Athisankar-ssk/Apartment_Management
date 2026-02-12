@@ -26,6 +26,7 @@ import PlaygroundBooking from "./pages/PlaygroundBooking";
 import PartyHallBooking from "./pages/PartyHallBooking";
 import SwimmingPoolBooking from "./pages/SwimmingPoolBooking";
 import MeetingHallBooking from "./pages/MeetingHallBooking";
+import VehicleParkingSlotBooking from "./pages/VehicleParkingSlotBooking";
 import AdminBookingDetails from "./pages/AdminBookingDetails";
 import Billing from "./pages/Billing";
 import UserElectricityBilling from "./pages/UserElectricityBilling";
@@ -51,6 +52,7 @@ function App() {
         <Route path="/user/services/complaint-status" element={<ComplaintStatus />} />
         <Route path="/user/services/letter-courier" element={<LetterCourier />} />
         <Route path="/user/booking/playground" element={<PlaygroundBooking />} />
+        <Route path="/user/booking/vehicle-parking" element={<VehicleParkingSlotBooking />} />
         <Route path="/user/booking/partyhall" element={<PartyHallBooking />} />
         <Route path="/user/booking/swimming-pool" element={<SwimmingPoolBooking />} />
         <Route path="/user/booking/meeting-hall" element={<MeetingHallBooking />} />

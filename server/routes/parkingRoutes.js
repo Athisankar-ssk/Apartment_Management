@@ -163,7 +163,7 @@ router.post('/release-slot', authenticateUser, async (req, res) => {
   }
 });
 
-// Admin: Get all parking requests/allocations
+// Admin: Get all parking requests/allocation
 router.get('/admin/all-bookings', async (req, res) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];

@@ -176,6 +176,39 @@ function AdminBookingDetails() {
     setFilteredVehicleParkingBookings(filteredVehicleParking);
   };
 
+  const handleApproveVehicleParking = async (bookingId) => {
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post(
+        `http://localhost:5000/api/parking/admin/approve/${bookingId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchAllBookings();
+    } catch (error) {
+      console.error("Error approving parking request:", error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
+  const handleRejectVehicleParking = async (bookingId) => {
+    if (!window.confirm("Are you sure you want to reject this parking request?")) {
+      return;
+    }
+    try {
+      const token = localStorage.getItem("adminToken");
+      await axios.post(
+        `http://localhost:5000/api/parking/admin/reject/${bookingId}`,
+        {},
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      fetchAllBookings();
+    } catch (error) {
+      console.error("Error rejecting parking request:", error);
+      alert(`Error: ${error.response?.data?.message || error.message}`);
+    }
+  };
+
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString("en-US", {
@@ -353,8 +386,18 @@ function AdminBookingDetails() {
                     }}
                   >
                     <option value="all">All</option>
-                    <option value="confirmed">Confirmed</option>
-                    <option value="cancelled">Cancelled</option>
+                    {activeTab === "vehicleparking" ? (
+                      <>
+                        <option value="pending">Pending</option>
+                        <option value="approved">Approved</option>
+                        <option value="rejected">Rejected</option>
+                      </>
+                    ) : (
+                      <>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="cancelled">Cancelled</option>
+                      </>
+                    )}
                   </select>
                 </div>
               </div>
@@ -568,7 +611,8 @@ function AdminBookingDetails() {
                         <th style={tableHeaderStyle}>Vehicle Type</th>
                         <th style={tableHeaderStyle}>Vehicle Number</th>
                         <th style={tableHeaderStyle}>Status</th>
-                        <th style={tableHeaderStyle}>Allocated On</th>
+                        <th style={tableHeaderStyle}>Requested On</th>
+                        <th style={tableHeaderStyle}>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -580,9 +624,67 @@ function AdminBookingDetails() {
                           <td style={tableCellStyle}>{booking.apartmentNumber}</td>
                           <td style={tableCellStyle}>{booking.vehicleType}</td>
                           <td style={tableCellStyle}>{booking.vehicleNumber}</td>
-                          <td style={tableCellStyle}>{getStatusBadge(booking.status)}</td>
                           <td style={tableCellStyle}>
-                            {booking.approvedDate ? new Date(booking.approvedDate).toLocaleDateString() : new Date(booking.createdAt).toLocaleDateString()}
+                            {booking.status === "pending" ? (
+                              <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#fef3c7", color: "#92400e", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>
+                                Pending
+                              </span>
+                            ) : booking.status === "approved" ? (
+                              <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#d4edda", color: "#155724", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>
+                                Approved
+                              </span>
+                            ) : booking.status === "rejected" ? (
+                              <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#f8d7da", color: "#721c24", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>
+                                Rejected
+                              </span>
+                            ) : (
+                              <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#e2e8f0", color: "#475569", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>
+                                {booking.status}
+                              </span>
+                            )}
+                          </td>
+                          <td style={tableCellStyle}>
+                            {new Date(booking.createdAt).toLocaleDateString()}
+                          </td>
+                          <td style={tableCellStyle}>
+                            {booking.status === "pending" ? (
+                              <div style={{ display: "flex", gap: "0.5rem" }}>
+                                <button
+                                  onClick={() => handleApproveVehicleParking(booking._id)}
+                                  style={{
+                                    padding: "0.4rem 0.8rem",
+                                    backgroundColor: "#10b981",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Approve
+                                </button>
+                                <button
+                                  onClick={() => handleRejectVehicleParking(booking._id)}
+                                  style={{
+                                    padding: "0.4rem 0.8rem",
+                                    backgroundColor: "#ef4444",
+                                    color: "white",
+                                    border: "none",
+                                    borderRadius: "4px",
+                                    cursor: "pointer",
+                                    fontSize: "0.75rem",
+                                    fontWeight: "600",
+                                  }}
+                                >
+                                  Reject
+                                </button>
+                              </div>
+                            ) : (
+                              <span style={{ color: "#64748b", fontSize: "0.75rem" }}>
+                                {booking.status === "approved" ? "Approved" : "No actions"}
+                              </span>
+                            )}
                           </td>
                         </tr>
                       ))}

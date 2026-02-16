@@ -162,7 +162,7 @@ function VehicleParkingSlotBooking() {
           }}>
             <h2>Request Parking Slot</h2>
             <p style={{ color: "#666", marginBottom: "1.5rem" }}>
-              Select an available parking slot to permanently allocate to your vehicle. Once approved by the admin, the slot will be assigned to you.
+              Select an available free parking slot. Once submitted, your request will be pending admin approval. After approval, the slot will be permanently assigned to you and won't be available for other users.
             </p>
             
             <div style={{ marginBottom: "1rem" }}>
@@ -272,53 +272,75 @@ function VehicleParkingSlotBooking() {
             borderRadius: "8px",
             boxShadow: "0 2px 4px rgba(0,0,0,0.1)"
           }}>
-            <h2>My Allocated Slot</h2>
+            <h2>My Parking Status</h2>
             {allocatedSlot ? (
-              <div style={{
-                padding: "1.5rem",
-                border: "2px solid #28a745",
-                borderRadius: "8px",
-                backgroundColor: "#f0f8f5"
-              }}>
-                <div style={{ marginBottom: "1rem" }}>
-                  <p style={{ margin: "0 0 0.5rem 0" }}>
-                    <strong>Parking Slot:</strong> <span style={{ fontSize: "1.2rem", color: "#007bff" }}>{allocatedSlot.slotName || allocatedSlot.slotId}</span>
-                  </p>
-                  <p style={{ margin: "0 0 0.5rem 0" }}>
-                    <strong>Vehicle Type:</strong> {allocatedSlot.vehicleType}
-                  </p>
-                  <p style={{ margin: "0 0 0.5rem 0" }}>
-                    <strong>Vehicle Number:</strong> {allocatedSlot.vehicleNumber}
-                  </p>
-                  <p style={{ margin: "0 0 0.5rem 0" }}>
-                    <strong>Status:</strong> <span style={{ 
-                      color: allocatedSlot.status === "approved" ? "green" : allocatedSlot.status === "pending" ? "orange" : "red",
-                      fontWeight: "600"
-                    }}>
-                      {allocatedSlot.status ? allocatedSlot.status.charAt(0).toUpperCase() + allocatedSlot.status.slice(1) : "Active"}
-                    </span>
-                  </p>
-                  {allocatedSlot.approvedDate && (
+              <div>
+                <div style={{
+                  padding: "1.5rem",
+                  border: allocatedSlot.status === "approved" ? "2px solid #28a745" : allocatedSlot.status === "pending" ? "2px solid #ffc107" : "2px solid #dc3545",
+                  borderRadius: "8px",
+                  backgroundColor: allocatedSlot.status === "approved" ? "#f0f8f5" : allocatedSlot.status === "pending" ? "#fffbf0" : "#fef1f1"
+                }}>
+                  <div style={{ marginBottom: "1rem" }}>
                     <p style={{ margin: "0 0 0.5rem 0" }}>
-                      <strong>Allocated Since:</strong> {new Date(allocatedSlot.approvedDate).toLocaleDateString()}
+                      <strong>Parking Slot:</strong> <span style={{ fontSize: "1.2rem", color: "#007bff" }}>{allocatedSlot.slotName || allocatedSlot.slotId}</span>
                     </p>
+                    <p style={{ margin: "0 0 0.5rem 0" }}>
+                      <strong>Vehicle Type:</strong> {allocatedSlot.vehicleType}
+                    </p>
+                    <p style={{ margin: "0 0 0.5rem 0" }}>
+                      <strong>Vehicle Number:</strong> {allocatedSlot.vehicleNumber}
+                    </p>
+                    <p style={{ margin: "0 0 0.5rem 0" }}>
+                      <strong>Status:</strong> <span style={{ 
+                        color: allocatedSlot.status === "approved" ? "green" : allocatedSlot.status === "pending" ? "orange" : "red",
+                        fontWeight: "600"
+                      }}>
+                        {allocatedSlot.status ? allocatedSlot.status.charAt(0).toUpperCase() + allocatedSlot.status.slice(1) : "Active"}
+                      </span>
+                    </p>
+
+                    {allocatedSlot.status === "pending" && (
+                      <div style={{
+                        marginTop: "1rem",
+                        padding: "1rem",
+                        backgroundColor: "#fff3cd",
+                        border: "1px solid #ffc107",
+                        borderRadius: "4px",
+                        color: "#856404"
+                      }}>
+                        <strong>⏳ Pending Approval</strong>
+                        <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.9rem" }}>
+                          Your parking slot request is under admin review. You will be notified once it's approved or rejected.
+                        </p>
+                      </div>
+                    )}
+
+                    {allocatedSlot.status === "approved" && allocatedSlot.approvedDate && (
+                      <p style={{ margin: "0.5rem 0 0 0" }}>
+                        <strong>Approved On:</strong> {new Date(allocatedSlot.approvedDate).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+
+                  {allocatedSlot.status === "approved" && (
+                    <button
+                      onClick={handleReleaseSlot}
+                      style={{
+                        padding: "0.5rem 1rem",
+                        backgroundColor: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "4px",
+                        cursor: "pointer",
+                        fontSize: "0.9rem",
+                        fontWeight: "600"
+                      }}
+                    >
+                      Release Slot
+                    </button>
                   )}
                 </div>
-                <button
-                  onClick={handleReleaseSlot}
-                  style={{
-                    padding: "0.5rem 1rem",
-                    backgroundColor: "#dc3545",
-                    color: "white",
-                    border: "none",
-                    borderRadius: "4px",
-                    cursor: "pointer",
-                    fontSize: "0.9rem",
-                    fontWeight: "600"
-                  }}
-                >
-                  Release Slot
-                </button>
               </div>
             ) : (
               <div style={{

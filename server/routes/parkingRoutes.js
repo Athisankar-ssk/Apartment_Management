@@ -194,7 +194,11 @@ router.post('/admin/approve/:bookingId', async (req, res) => {
     }
 
     // Verify admin token
-    jwt.verify(token, process.env.JWT_SECRET);
+    try {
+      jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
 
     const booking = await VehicleParking.findById(req.params.bookingId);
     if (!booking) {
@@ -221,7 +225,11 @@ router.post('/admin/reject/:bookingId', async (req, res) => {
     }
 
     // Verify admin token
-    jwt.verify(token, process.env.JWT_SECRET);
+    try {
+      jwt.verify(token, process.env.JWT_SECRET);
+    } catch (error) {
+      return res.status(401).json({ message: 'Invalid or expired token' });
+    }
 
     const booking = await VehicleParking.findById(req.params.bookingId);
     if (!booking) {

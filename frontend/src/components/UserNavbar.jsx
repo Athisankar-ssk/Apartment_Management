@@ -11,9 +11,26 @@ function UserNavbar() {
   const [showProfileDropdown, setShowProfileDropdown] = useState(false);
   const [userDetails, setUserDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
     fetchUserDetails();
+  }, []);
+
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(max-width: 768px)");
+    const handleChange = (event) => setIsMobile(event.matches);
+
+    setIsMobile(mediaQuery.matches);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+      return () => mediaQuery.removeEventListener("change", handleChange);
+    }
+
+    mediaQuery.addListener(handleChange);
+    return () => mediaQuery.removeListener(handleChange);
   }, []);
 
   const fetchUserDetails = async () => {
@@ -35,6 +52,38 @@ function UserNavbar() {
     localStorage.removeItem("userToken");
     localStorage.removeItem("userName");
     navigate("/");
+    setIsMenuOpen(false);
+  };
+
+  const closeAllDropdowns = () => {
+    setShowGrievanceDropdown(false);
+    setShowServicesDropdown(false);
+    setShowBookingDropdown(false);
+    setShowProfileDropdown(false);
+  };
+
+  const handleNavigate = (path) => {
+    navigate(path);
+    setIsMenuOpen(false);
+    closeAllDropdowns();
+  };
+
+  const handleDropdownToggle = (setter) => {
+    if (isMobile) {
+      setter((prev) => !prev);
+    }
+  };
+
+  const handleDropdownEnter = (setter) => {
+    if (!isMobile) {
+      setter(true);
+    }
+  };
+
+  const handleDropdownLeave = (setter) => {
+    if (!isMobile) {
+      setter(false);
+    }
   };
 
   return (
@@ -47,157 +96,170 @@ function UserNavbar() {
 
         <div className="spacer" />
 
-        <div className="navbar-actions">
-          <button className="nav-link" onClick={() => navigate('/user/dashboard')}>
-            Dashboard
-          </button>
-          <div 
-            className="dropdown"
-            onMouseEnter={() => setShowGrievanceDropdown(true)}
-            onMouseLeave={() => setShowGrievanceDropdown(false)}
-          >
-            <button className="nav-link">
-              Grievance
-            </button>
-            {showGrievanceDropdown && (
-              <div className="dropdown-menu">
-                <button className="dropdown-item" onClick={() => navigate('/user/grievance/electricity')}>
-                  Electricity
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/grievance/water')}>
-                  Water
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/grievance/cleaning')}>
-                  Cleaning Complaint
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/grievance/lift')}>
-                  Lift
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/grievance/other')}>
-                  Other Complaints
-                </button>
-              </div>
-            )}
-          </div>
-          <div 
-            className="dropdown"
-            onMouseEnter={() => setShowServicesDropdown(true)}
-            onMouseLeave={() => setShowServicesDropdown(false)}
-          >
-            <button className="nav-link">
-              Services
-            </button>
-            {showServicesDropdown && (
-              <div className="dropdown-menu">
-                <button className="dropdown-item" onClick={() => navigate('/user/services/maintenance-bills')}>
-                  Maintenance Bills
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/services/electricity-bill')}>
-                  Electricity Bill
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/services/complaint-status')}>
-                  Complaint Status
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/services/letter-courier')}>
-                  Letter and Courier Notification
-                </button>
-              </div>
-            )}
-          </div>
-          <div 
-            className="dropdown"
-            onMouseEnter={() => setShowBookingDropdown(true)}
-            onMouseLeave={() => setShowBookingDropdown(false)}
-          >
-            <button className="nav-link">
-              Booking
-            </button>
-            {showBookingDropdown && (
-              <div className="dropdown-menu">
-                <button className="dropdown-item" onClick={() => navigate('/user/booking/playground')}>
-                  Playground Booking
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/booking/partyhall')}>
-                  Party Hall Booking
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/booking/meeting-hall')}>
-                  Meeting Hall Booking
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/booking/swimming-pool')}>
-                  Swimming Pool Booking
-                </button>
-                <button className="dropdown-item" onClick={() => navigate('/user/booking/vehicle-parking')}>
-                  Vehicle Parking Slot Booking
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
+        <button
+          className="menu-toggle"
+          onClick={() => setIsMenuOpen((prev) => !prev)}
+          aria-label="Toggle navigation"
+          aria-expanded={isMenuOpen}
+        >
+          <span className="menu-bar" />
+          <span className="menu-bar" />
+          <span className="menu-bar" />
+        </button>
 
-        <div className="navbar-right">
-          <button className="btn outline-small" onClick={handleLogout}>
-            Logout
-          </button>
-          <div 
-            className="dropdown profile-dropdown"
-            onMouseEnter={() => setShowProfileDropdown(true)}
-            onMouseLeave={() => setShowProfileDropdown(false)}
-          >
-            <button 
-              className="profile-icon" 
-              title="Profile"
-              onClick={() => navigate('/user/profile')}
-            >
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                <circle cx="16" cy="16" r="15" stroke="#475569" strokeWidth="2" fill="#f1f5f9"/>
-                <path d="M16 16c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#475569"/>
-              </svg>
+        <div className={`navbar-menu ${isMenuOpen ? "open" : ""}`}>
+          <div className="navbar-actions">
+            <button className="nav-link" onClick={() => handleNavigate('/user/dashboard')}>
+              Dashboard
             </button>
-            {showProfileDropdown && (
-              <div className="dropdown-menu profile-menu">
-                <div className="profile-header">
-                  <h4>Profile Details</h4>
+            <div
+              className="dropdown"
+              onMouseEnter={() => handleDropdownEnter(setShowGrievanceDropdown)}
+              onMouseLeave={() => handleDropdownLeave(setShowGrievanceDropdown)}
+            >
+              <button className="nav-link" onClick={() => handleDropdownToggle(setShowGrievanceDropdown)}>
+                Grievance
+              </button>
+              {showGrievanceDropdown && (
+                <div className="dropdown-menu">
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/grievance/electricity')}>
+                    Electricity
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/grievance/water')}>
+                    Water
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/grievance/cleaning')}>
+                    Cleaning Complaint
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/grievance/lift')}>
+                    Lift
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/grievance/other')}>
+                    Other Complaints
+                  </button>
                 </div>
-                {loading ? (
-                  <div className="profile-content">
-                    <p>Loading...</p>
+              )}
+            </div>
+            <div
+              className="dropdown"
+              onMouseEnter={() => handleDropdownEnter(setShowServicesDropdown)}
+              onMouseLeave={() => handleDropdownLeave(setShowServicesDropdown)}
+            >
+              <button className="nav-link" onClick={() => handleDropdownToggle(setShowServicesDropdown)}>
+                Services
+              </button>
+              {showServicesDropdown && (
+                <div className="dropdown-menu">
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/services/maintenance-bills')}>
+                    Maintenance Bills
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/services/electricity-bill')}>
+                    Electricity Bill
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/services/complaint-status')}>
+                    Complaint Status
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/services/letter-courier')}>
+                    Letter and Courier Notification
+                  </button>
+                </div>
+              )}
+            </div>
+            <div
+              className="dropdown"
+              onMouseEnter={() => handleDropdownEnter(setShowBookingDropdown)}
+              onMouseLeave={() => handleDropdownLeave(setShowBookingDropdown)}
+            >
+              <button className="nav-link" onClick={() => handleDropdownToggle(setShowBookingDropdown)}>
+                Booking
+              </button>
+              {showBookingDropdown && (
+                <div className="dropdown-menu">
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/booking/playground')}>
+                    Playground Booking
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/booking/partyhall')}>
+                    Party Hall Booking
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/booking/meeting-hall')}>
+                    Meeting Hall Booking
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/booking/swimming-pool')}>
+                    Swimming Pool Booking
+                  </button>
+                  <button className="dropdown-item" onClick={() => handleNavigate('/user/booking/vehicle-parking')}>
+                    Vehicle Parking Slot Booking
+                  </button>
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="navbar-right">
+            <button className="btn outline-small" onClick={handleLogout}>
+              Logout
+            </button>
+            <div
+              className="dropdown profile-dropdown"
+              onMouseEnter={() => handleDropdownEnter(setShowProfileDropdown)}
+              onMouseLeave={() => handleDropdownLeave(setShowProfileDropdown)}
+            >
+              <button
+                className="profile-icon"
+                title="Profile"
+                onClick={() => (isMobile ? handleDropdownToggle(setShowProfileDropdown) : handleNavigate('/user/profile'))}
+              >
+                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                  <circle cx="16" cy="16" r="15" stroke="#475569" strokeWidth="2" fill="#f1f5f9"/>
+                  <path d="M16 16c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z" fill="#475569"/>
+                </svg>
+              </button>
+              {showProfileDropdown && (
+                <div className="dropdown-menu profile-menu">
+                  <div className="profile-header">
+                    <h4>Profile Details</h4>
                   </div>
-                ) : userDetails ? (
-                  <div className="profile-content">
-                    <div className="profile-item">
-                      <span className="profile-label">Name:</span>
-                      <span className="profile-value">{userDetails.name}</span>
+                  {loading ? (
+                    <div className="profile-content">
+                      <p>Loading...</p>
                     </div>
-                    <div className="profile-item">
-                      <span className="profile-label">Email:</span>
-                      <span className="profile-value">{userDetails.email}</span>
+                  ) : userDetails ? (
+                    <div className="profile-content">
+                      <div className="profile-item">
+                        <span className="profile-label">Name:</span>
+                        <span className="profile-value">{userDetails.name}</span>
+                      </div>
+                      <div className="profile-item">
+                        <span className="profile-label">Email:</span>
+                        <span className="profile-value">{userDetails.email}</span>
+                      </div>
+                      <div className="profile-item">
+                        <span className="profile-label">User ID:</span>
+                        <span className="profile-value">{userDetails.userId}</span>
+                      </div>
+                      <div className="profile-item">
+                        <span className="profile-label">Apartment:</span>
+                        <span className="profile-value">{userDetails.apartmentNumber || "N/A"}</span>
+                      </div>
+                      <div className="profile-item">
+                        <span className="profile-label">Mobile:</span>
+                        <span className="profile-value">{userDetails.mobile || "N/A"}</span>
+                      </div>
+                      <button
+                        className="view-full-profile-btn"
+                        onClick={() => handleNavigate('/user/profile')}
+                      >
+                        View Full Profile
+                      </button>
                     </div>
-                    <div className="profile-item">
-                      <span className="profile-label">User ID:</span>
-                      <span className="profile-value">{userDetails.userId}</span>
+                  ) : (
+                    <div className="profile-content">
+                      <p>Unable to load details</p>
                     </div>
-                    <div className="profile-item">
-                      <span className="profile-label">Apartment:</span>
-                      <span className="profile-value">{userDetails.apartmentNumber || "N/A"}</span>
-                    </div>
-                    <div className="profile-item">
-                      <span className="profile-label">Mobile:</span>
-                      <span className="profile-value">{userDetails.mobile || "N/A"}</span>
-                    </div>
-                    <button 
-                      className="view-full-profile-btn" 
-                      onClick={() => navigate('/user/profile')}
-                    >
-                      View Full Profile
-                    </button>
-                  </div>
-                ) : (
-                  <div className="profile-content">
-                    <p>Unable to load details</p>
-                  </div>
-                )}
-              </div>
-            )}
+                  )}
+                </div>
+              )}
+            </div>
           </div>
         </div>
       </div>

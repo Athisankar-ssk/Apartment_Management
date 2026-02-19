@@ -4,6 +4,7 @@ import dotenv from "dotenv";
 import connectDB from "./config/db.js";
 import adminRoutes from "./routes/adminRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
+import securityRoutes from "./routes/securityRoutes.js";
 import complaintRoutes from "./routes/complaintRoutes.js";
 import playgroundRoutes from "./routes/playgroundRoutes.js";
 import partyHallRoutes from "./routes/partyHallRoutes.js";
@@ -30,6 +31,7 @@ app.use(express.json());
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/user", userRoutes);
+app.use("/api/security", securityRoutes);
 app.use("/api/complaints", complaintRoutes);
 app.use("/api/playground", playgroundRoutes);
 app.use("/api/partyhall", partyHallRoutes);

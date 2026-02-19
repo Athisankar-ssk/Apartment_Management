@@ -10,6 +10,7 @@ function Navbar() {
 
   const adminToken = localStorage.getItem("adminToken");
   const userToken = localStorage.getItem("userToken");
+  const securityToken = localStorage.getItem("securityToken");
 
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 768px)");
@@ -31,6 +32,9 @@ function Navbar() {
     localStorage.removeItem("adminName");
     localStorage.removeItem("userToken");
     localStorage.removeItem("userName");
+    localStorage.removeItem("securityToken");
+    localStorage.removeItem("securityName");
+    localStorage.removeItem("securityId");
     navigate("/");
     setIsMenuOpen(false);
   };
@@ -97,16 +101,28 @@ function Navbar() {
               </>
             )}
 
-            {/* Show logout for admin or user, otherwise show login options */}
-            {adminToken || userToken ? (
+            {/* Show security-specific navigation on security dashboard */}
+            {securityToken && location.pathname === '/security/dashboard' && (
+              <>
+                <Link to="/security/dashboard" onClick={handleNavClick} className={`nav-link ${location.pathname === '/security/dashboard' ? 'active' : ''}`}>
+                  Dashboard
+                </Link>
+              </>
+            )}
+
+            {/* Show logout for admin, user, or security, otherwise show login options */}
+            {adminToken || userToken || securityToken ? (
               <>
                 <button className="btn outline-small" onClick={handleLogout}>Logout</button>
               </>
             ) : (
-              // If not logged in, show User Login and Admin Login
+              // If not logged in, show User Login, Security Login, and Admin Login
               <>
                 <Link to="/user/login" onClick={handleNavClick} className={`btn outline-small ${location.pathname === '/user/login' ? 'active' : ''}`}>
                   User Login
+                </Link>
+                <Link to="/security/login" onClick={handleNavClick} className={`btn outline-small ${location.pathname === '/security/login' ? 'active' : ''}`}>
+                  Security Login
                 </Link>
                 <Link to="/admin/login" onClick={handleNavClick} className={`btn outline-small ${location.pathname === '/admin/login' ? 'active' : ''}`}>
                   Admin Login

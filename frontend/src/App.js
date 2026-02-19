@@ -13,6 +13,8 @@ import ComplaintDetails from "./pages/ComplaintDetails";
 import UserLogin from "./pages/UserLogin";
 import UserDashboard from "./pages/UserDashboard";
 import UserProfile from "./pages/UserProfile";
+import SecurityLogin from "./pages/SecurityLogin";
+import SecurityDashboard from "./pages/SecurityDashboard";
 import Complaints from "./pages/Complaints";
 import ElectricityComplaint from "./pages/ElectricityComplaint";
 import WaterComplaint from "./pages/WaterComplaint";
@@ -43,6 +45,8 @@ function App() {
         <Route path="/user/login" element={<UserLogin />} />
         <Route path="/user/dashboard" element={<UserDashboard />} />
         <Route path="/user/profile" element={<UserProfile />} />
+        <Route path="/security/login" element={<SecurityLogin />} />
+        <Route path="/security/dashboard" element={<SecurityDashboard />} />
         <Route path="/user/grievance/electricity" element={<ElectricityComplaint />} />
         <Route path="/user/grievance/water" element={<WaterComplaint />} />
         <Route path="/user/grievance/cleaning" element={<CleaningComplaint />} />

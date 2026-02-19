@@ -215,31 +215,36 @@ function CreateAccount() {
       <Navbar />
       <div className="admin-dashboard">
         <header className="admin-header">
-          <h1>Create Account</h1>
-          <p className="subtitle">Add a new user or security account to the apartment management system</p>
+          <div>
+            <h1>Create Account</h1>
+            <p className="subtitle">Add a new user or security account</p>
+          </div>
         </header>
 
         <section className="admin-grid">
           <div className="card create-card">
-            <h3>Account Type</h3>
-            <div className="form-group" style={{ marginBottom: '2rem' }}>
-              <label className="label">Select Account Type *</label>
-              <select 
-                value={accountType}
-                onChange={handleAccountTypeChange}
-                className="form-input"
-                required
+            <div className="account-type-selector">
+              <button 
+                type="button"
+                className={`type-option ${accountType === 'user' ? 'active' : ''}`}
+                onClick={() => handleAccountTypeChange({ target: { value: 'user' }})}
               >
-                <option value="user">User (Resident)</option>
-                <option value="security">Security</option>
-              </select>
+                👤 User (Resident)
+              </button>
+              <button 
+                type="button"
+                className={`type-option ${accountType === 'security' ? 'active' : ''}`}
+                onClick={() => handleAccountTypeChange({ target: { value: 'security' }})}
+              >
+                🔒 Security
+              </button>
             </div>
 
             {message && <div className={message.includes('✓') ? 'success-message' : 'error-message'}>{message}</div>}
             
             {accountType === "user" ? (
               <form onSubmit={handleCreateUser} className="create-user-form">
-                <h3 style={{ marginBottom: '1rem' }}>User Information</h3>
+                <h3>User Information</h3>
                 <div className="form-grid">
                 <div className="form-group">
                   <label className="label">User Name *</label>
@@ -275,7 +280,7 @@ function CreateAccount() {
                     value={form.userId} 
                     className="form-input"
                     readOnly
-                    placeholder="Select floor and room to generate"
+                    placeholder="Select floor and room"
                     style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed' }}
                   />
                 </div>
@@ -320,8 +325,8 @@ function CreateAccount() {
                     })}
                   </select>
                   {floor && occupiedRooms.size > 0 && (
-                    <span style={{ fontSize: '0.85rem', color: '#64748b', marginTop: '0.25rem' }}>
-                      Grayed out rooms are already occupied
+                    <span style={{ fontSize: '0.75rem', color: '#64748b', marginTop: '0.15rem', display: 'block' }}>
+                      Grayed out rooms are occupied
                     </span>
                   )}
                 </div>
@@ -333,7 +338,7 @@ function CreateAccount() {
                     value={form.apartmentNumber} 
                     className="form-input" 
                     readOnly
-                    placeholder="Auto-generated based on floor and room"
+                    placeholder="Auto-generated"
                     style={{ backgroundColor: '#f8fafc', cursor: 'not-allowed' }}
                   />
                 </div>
@@ -380,13 +385,13 @@ function CreateAccount() {
                   type="submit" 
                   disabled={loading}
                 >
-                  {loading ? 'Creating...' : 'Create Account'}
+                  {loading ? 'Creating...' : 'Create User Account'}
                 </button>
               </div>
             </form>
             ) : (
               <form onSubmit={handleCreateSecurity} className="create-user-form">
-                <h3 style={{ marginBottom: '1rem' }}>Security Information</h3>
+                <h3>Security Information</h3>
                 <div className="form-grid">
                   <div className="form-group">
                     <label className="label">Security ID *</label>

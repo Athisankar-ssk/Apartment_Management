@@ -6,7 +6,7 @@ import { canCancelBefore } from '../utils/cancellation.js';
 
 const router = express.Router();
 
-// Middleware to verify user toke
+// Middleware to verify user token
 const authenticateUser = async (req, res, next) => {
   try {
     const token = req.headers.authorization?.split(' ')[1];

@@ -246,4 +246,69 @@ router.post('/admin/reject/:bookingId', async (req, res) => {
   }
 });
 
+// Security: Get all parking slot allocations (with slot availability)
+router.get('/security/all-allocations', async (req, res) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    if (!token) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // Verify token (works for both admin and security)
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    // Get all approved and pending allocations
+    const allocations = await VehicleParking.find({
+      status: { $in: ['approved', 'pending'] }
+    })
+      .select('-password')
+      .sort({ slotId: 1 });
+
+    // Get allocated slot IDs
+    const allocatedSlotIds = allocations.map(a => a.slotId);
+
+    // Create a comprehensive slot map
+    const PARKING_SLOTS = [
+      { id: 'P001', name: 'Ground Floor - A1' },
+      { id: 'P002', name: 'Ground Floor - A2' },
+      { id: 'P003', name: 'Ground Floor - A3' },
+      { id: 'P004', name: 'Ground Floor - A4' },
+      { id: 'P005', name: 'Ground Floor - B1' },
+      { id: 'P006', name: 'Ground Floor - B2' },
+      { id: 'P007', name: 'Ground Floor - B3' },
+      { id: 'P008', name: 'Ground Floor - B4' },
+      { id: 'P009', name: '1st Floor - C1' },
+      { id: 'P010', name: '1st Floor - C2' },
+      { id: 'P011', name: '1st Floor - C3' },
+      { id: 'P012', name: '1st Floor - C4' },
+      { id: 'P013', name: '1st Floor - D1' },
+      { id: 'P014', name: '1st Floor - D2' },
+      { id: 'P015', name: '1st Floor - D3' },
+    ];
+
+    const slotMap = PARKING_SLOTS.map(slot => {
+      const allocation = allocations.find(a => a.slotId === slot.id);
+      return {
+        slotId: slot.id,
+        slotName: slot.name,
+        isAllocated: !!allocation,
+        allocation: allocation ? {
+          id: allocation._id,
+          userName: allocation.userName,
+          apartmentNumber: allocation.apartmentNumber,
+          vehicleNumber: allocation.vehicleNumber,
+          vehicleType: allocation.vehicleType,
+          status: allocation.status,
+          approvedDate: allocation.approvedDate
+        } : null
+      };
+    });
+
+    res.json(slotMap);
+  } catch (error) {
+    console.error('Error fetching parking allocations:', error);
+    res.status(500).json({ message: 'Server error', error: error.message });
+  }
+});
+
 export default router;

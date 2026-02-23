@@ -28,7 +28,7 @@ function SecurityDashboard() {
       title: "Parking Management",
       description: "Monitor vehicle entries and parking slots",
       icon: "🚗",
-      path: "#"
+      path: "/security-parking-management"
     },
    
   ];

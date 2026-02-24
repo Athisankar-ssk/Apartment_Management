@@ -406,7 +406,7 @@ function AdminBookingDetails() {
             {loading ? (
               <p style={{ color: "#64748b" }}>Loading bookings..</p>
             ) : activeTab === "playground" ? (
-              // Playground Bookings Table
+              // Playground Bookings Tabl
               filteredPlaygroundBookings.length === 0 ? (
                 <p style={{ color: "#64748b" }}>No playground bookings found</p>
               ) : (

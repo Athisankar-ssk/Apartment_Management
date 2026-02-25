@@ -16,7 +16,7 @@ function SecurityDashboard() {
       title: "Visitor Management",
       description: "Track and manage visitor entries and exits",
       icon: "👤",
-      path: "#"
+      path: "/security/visitor-management"
     },
     {
       title: "Incident Reports",

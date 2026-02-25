@@ -16,6 +16,7 @@ import UserProfile from "./pages/UserProfile";
 import SecurityLogin from "./pages/SecurityLogin";
 import SecurityDashboard from "./pages/SecurityDashboard";
 import SecurityParkingManagement from "./pages/SecurityParkingManagement";
+import VisitorManagement from "./pages/VisitorManagement";
 import Complaints from "./pages/Complaints";
 import ElectricityComplaint from "./pages/ElectricityComplaint";
 import WaterComplaint from "./pages/WaterComplaint";
@@ -48,6 +49,7 @@ function App() {
         <Route path="/user/profile" element={<UserProfile />} />
         <Route path="/security/login" element={<SecurityLogin />} />
         <Route path="/security/dashboard" element={<SecurityDashboard />} />
+        <Route path="/security/visitor-management" element={<VisitorManagement />} />
         <Route path="/security-parking-management" element={<SecurityParkingManagement />} />
         <Route path="/user/grievance/electricity" element={<ElectricityComplaint />} />
         <Route path="/user/grievance/water" element={<WaterComplaint />} />

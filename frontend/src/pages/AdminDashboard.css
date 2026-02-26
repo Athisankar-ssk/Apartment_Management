@@ -22,6 +22,71 @@
   box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.2);
 }
 
+.user-dashboard--home {
+  max-height: none;
+  overflow-y: visible;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  background-color: #faf6f0;
+  background-image:
+    linear-gradient(135deg, rgba(254, 251, 247, 0.96) 0%, rgba(250, 246, 240, 0.99) 45%, rgba(244, 237, 224, 0.96) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='360' height='360' viewBox='0 0 360 360'><rect width='360' height='360' fill='none'/><circle cx='80' cy='90' r='52' fill='%23fed7aa' fill-opacity='0.5'/><circle cx='280' cy='220' r='68' fill='%23fcdab3' fill-opacity='0.4'/><path d='M50 280h260' stroke='%23fbbf24' stroke-width='2' stroke-opacity='0.35'/><ellipse cx='150' cy='150' rx='40' ry='25' fill='%23fde68a' fill-opacity='0.3'/></svg>");
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 360px 360px;
+  border-radius: 18px;
+  box-shadow: inset 0 0 0 1px rgba(217, 119, 6, 0.15);
+}
+
+.user-dashboard--home .admin-hero__panel {
+  background: linear-gradient(135deg, #0f766e 0%, #14b8a6 100%);
+  color: #ecfeff;
+  border: 1px solid rgba(20, 184, 166, 0.55);
+}
+
+.user-dashboard--home .admin-hero__panel-title {
+  color: rgba(236, 254, 255, 0.95);
+}
+
+.user-dashboard--home .admin-hero__panel-row {
+  border-bottom: 1px solid rgba(236, 254, 255, 0.25);
+}
+
+.user-dashboard--home .admin-hero__panel-row strong {
+  color: #ecfeff;
+}
+
+.user-dashboard--home .admin-hero__eyebrow {
+  color: #b45309;
+}
+
+.user-dashboard--home .admin-hero__title {
+  color: #78350f;
+}
+
+.user-dashboard--home .admin-hero__subtitle {
+  color: #92400e;
+}
+
+.user-dashboard--home .admin-section__title {
+  color: #78350f;
+}
+
+.user-dashboard--home .admin-card {
+  background: white;
+  border: 1px solid rgba(217, 119, 6, 0.15);
+}
+
+.user-dashboard--home .admin-card:hover:not(:disabled) {
+  border-color: rgba(217, 119, 6, 0.5);
+  box-shadow: 0 16px 32px rgba(217, 119, 6, 0.12);
+}
+
+.user-dashboard--home .admin-hero {
+  background: rgba(255, 255, 255, 0.9);
+  border: 1px solid rgba(217, 119, 6, 0.2);
+  box-shadow: 0 12px 30px rgba(217, 119, 6, 0.08);
+}
+
+
 .admin-hero {
   display: grid;
   grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);

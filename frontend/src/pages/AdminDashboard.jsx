@@ -6,41 +6,60 @@ import "./AdminDashboard.css";
 
 function AdminDashboard() {
   const name = localStorage.getItem("adminName");
-  const [visitors, setVisitors] = useState([]);
-  const [visitorsLoading, setVisitorsLoading] = useState(false);
-  const [visitorsError, setVisitorsError] = useState("");
   const navigate = useNavigate();
-
-  const handleCardClick = (path) => {
-    navigate(path);
-  };
+  const [residentCount, setResidentCount] = useState(0);
+  const [securityCount, setSecurityCount] = useState(0);
+  const [statsLoading, setStatsLoading] = useState(true);
 
   const dashboardCards = [
     {
       title: "Users",
-      description: "Manage users and view user details",
+      description: "Manage user profiles and resident details",
       icon: "👥",
-      path: "/user-management"
+      path: "/user-management",
+      accent: "#2563eb"
     },
     {
       title: "Bookings",
-      description: "View and manage all bookings including parking, halls, and pools",
+      description: "Review facility bookings and approvals",
       icon: "📅",
-      path: "/admin/booking-details"
+      path: "/admin/booking-details",
+      accent: "#0ea5e9"
     },
     {
-      title: "Grievances",
-      description: "Manage complaints and resolve grievances",
-      icon: "⚠️",
-      path: "/complaints"
+      title: "Visitor Management",
+      description: "Monitor visitor logs captured by security",
+      icon: "🛡️",
+      path: "/admin/visitor-monitoring",
+      accent: "#14b8a6",
+      tag: "View only"
     },
     {
       title: "Billing",
-      description: "Manage billing and payment information",
+      description: "Track billing cycles and payments",
       icon: "💰",
-      path: "/admin/billing"
+      path: "/admin/billing",
+      accent: "#f97316"
+    },
+    {
+      title: "Grievances",
+      description: "Resolve complaints and track status",
+      icon: "⚠️",
+      path: "/complaints",
+      accent: "#ef4444"
     }
   ];
+
+  const handleCardAction = (card) => {
+    if (card.disabled) return;
+    if (card.action) {
+      card.action();
+      return;
+    }
+    if (card.path) {
+      navigate(card.path);
+    }
+  };
 
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
@@ -49,186 +68,92 @@ function AdminDashboard() {
       return;
     }
 
-    const fetchVisitors = async () => {
-      setVisitorsLoading(true);
-      setVisitorsError("");
-      try {
-        const response = await axios.get("http://localhost:5000/api/visitors/admin/all", {
-          headers: { Authorization: `Bearer ${adminToken}` }
-        });
-        setVisitors(response.data);
-      } catch (err) {
-        console.error("Error fetching visitor details:", err);
-        setVisitorsError("Unable to load visitor details.");
-      } finally {
-        setVisitorsLoading(false);
-      }
-    };
-
-    fetchVisitors();
+    fetchStats();
   }, [navigate]);
 
-  const formatDateTime = (date) => {
-    if (!date) return "—";
-    const d = new Date(date);
-    return d.toLocaleString("en-IN", {
-      year: "numeric",
-      month: "2-digit",
-      day: "2-digit",
-      hour: "2-digit",
-      minute: "2-digit",
-      second: "2-digit"
-    });
+  const fetchStats = async () => {
+    try {
+      setStatsLoading(true);
+      const adminToken = localStorage.getItem("adminToken");
+      const response = await axios.get("http://localhost:5000/api/admin/stats", {
+        headers: { Authorization: `Bearer ${adminToken}` }
+      });
+      console.log("Stats response:", response.data);
+      setResidentCount(response.data.totalUsers || 0);
+      setSecurityCount(response.data.totalSecurity || 0);
+    } catch (err) {
+      console.error("Error fetching stats:", err);
+      console.error("Error details:", err.response?.data);
+      setResidentCount(0);
+      setSecurityCount(0);
+    } finally {
+      setStatsLoading(false);
+    }
   };
 
   return (
     <>
       <Navbar />
-      <div className="admin-dashboard">
-        <header className="admin-header">
-          <h1>Welcome, {name}</h1>
-          <p style={{ color: "#64748b", marginTop: "0.5rem", fontSize: "1rem" }}>
-            Manage your apartment community
-          </p>
+      <div className="admin-dashboard admin-dashboard--home">
+        <header className="admin-hero">
+          <div className="admin-hero__content">
+            <p className="admin-hero__eyebrow">Admin Control Center</p>
+            <h1 className="admin-hero__title">Welcome, {name}</h1>
+            <p className="admin-hero__subtitle">
+              Monitor community activity, respond quickly, and keep operations running smoothly.
+            </p>
+          </div>
+          <div className="admin-hero__panel">
+            <div className="admin-hero__panel-title">Community Overview</div>
+            <div className="admin-hero__panel-row">
+              <span>Total Residents</span>
+              <strong>{statsLoading ? "..." : residentCount}</strong>
+            </div>
+            <div className="admin-hero__panel-row">
+              <span>Security Staff</span>
+              <strong>{statsLoading ? "..." : securityCount}</strong>
+            </div>
+            <div className="admin-hero__panel-row">
+              <span>Status</span>
+              <strong>{statsLoading ? "Updating..." : "Active"}</strong>
+            </div>
+          </div>
         </header>
 
-        <section className="admin-grid" style={{ gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "2rem" }}>
-          {dashboardCards.map((card, index) => (
-            <div
-              key={index}
-              onClick={() => handleCardClick(card.path)}
-              role="button"
-              tabIndex={0}
-              onKeyPress={(e) => {
-                if (e.key === 'Enter') handleCardClick(card.path);
-              }}
-              style={{
-                padding: "2rem",
-                backgroundColor: "white",
-                border: "1px solid #e2e8f0",
-                borderRadius: "12px",
-                boxShadow: "0 1px 3px rgba(0, 0, 0, 0.1)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-                display: "flex",
-                flexDirection: "column",
-                gap: "1rem",
-                position: "relative",
-                overflow: "hidden"
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-4px)";
-                e.currentTarget.style.boxShadow = "0 12px 24px rgba(0, 0, 0, 0.15)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 1px 3px rgba(0, 0, 0, 0.1)";
-              }}
-            >
-              {/* Top color bar */}
-              <div
-                style={{
-                  position: "absolute",
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  height: "4px",
-                  backgroundColor: "#f0f3f8"
-                }}
-              />
-
-              {/* Icon */}
-              <div style={{ fontSize: "3rem" }}>{card.icon}</div>
-
-              {/* Title */}
-              <h3 style={{ margin: 0, color: "#1e293b", fontSize: "1.5rem", fontWeight: "700" }}>
-                {card.title}
-              </h3>
-
-              {/* Description */}
-              <p style={{ margin: 0, color: "#64748b", fontSize: "0.95rem", lineHeight: "1.5" }}>
-                {card.description}
-              </p>
-
-              {/* Arrow indicator */}
-              <div style={{ marginTop: "auto", display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                <span style={{ color: "#3b82f6", fontWeight: "600", fontSize: "0.9rem" }}>Access</span>
-                <span style={{ color: "#3b82f6", fontSize: "1.2rem" }}>→</span>
-              </div>
-            </div>
-          ))}
-        </section>
-
-        <section style={{ marginTop: "2rem" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginBottom: "1rem",
-              flexWrap: "wrap",
-              gap: "0.75rem"
-            }}
-          >
+        <section className="admin-section">
+          <div className="admin-section__header">
             <div>
-              <h2 style={{ margin: 0, color: "#1e293b" }}>Visitor Monitoring</h2>
-              <p style={{ margin: "0.25rem 0 0", color: "#64748b" }}>
-                View-only access to security logs
-              </p>
+              <h2 className="admin-section__title">Quick Modules</h2>
+              <p className="admin-section__subtitle">Navigate core tools from a single view.</p>
             </div>
           </div>
-
-          <div style={{ backgroundColor: "white", borderRadius: "12px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
-            <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid #e2e8f0" }}>
-              <h3 style={{ margin: 0, color: "#1e293b" }}>Latest Visitor Entries</h3>
-            </div>
-
-            {visitorsLoading && (
-              <div style={{ padding: "1.5rem", color: "#64748b" }}>Loading visitor data...</div>
-            )}
-
-            {!visitorsLoading && visitorsError && (
-              <div style={{ padding: "1.5rem", color: "#b91c1c" }}>{visitorsError}</div>
-            )}
-
-            {!visitorsLoading && !visitorsError && visitors.length === 0 && (
-              <div style={{ padding: "1.5rem", color: "#64748b" }}>No visitor entries found.</div>
-            )}
-
-            {!visitorsLoading && !visitorsError && visitors.length > 0 && (
-              <div style={{ overflowX: "auto" }}>
-                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.95rem" }}>
-                  <thead>
-                    <tr style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Visitor Name</th>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Phone</th>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Resident Name</th>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Apartment</th>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>In Time</th>
-                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Out Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {visitors.map((visitor) => (
-                      <tr key={visitor._id} style={{ borderBottom: "1px solid #e2e8f0" }}>
-                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.visitorName}</td>
-                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.visitorPhone}</td>
-                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.residentName}</td>
-                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.apartmentNumber}</td>
-                        <td style={{ padding: "0.9rem", color: "#1e293b", fontSize: "0.9rem" }}>
-                          {formatDateTime(visitor.inTime)}
-                        </td>
-                        <td style={{ padding: "0.9rem", color: "#1e293b", fontSize: "0.9rem" }}>
-                          {formatDateTime(visitor.outTime)}
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            )}
+          <div className="admin-card-grid">
+            {dashboardCards.map((card) => (
+              <button
+                key={card.title}
+                type="button"
+                className={`admin-card${card.disabled ? " admin-card--disabled" : ""}`}
+                style={{ "--card-accent": card.accent }}
+                onClick={() => handleCardAction(card)}
+                disabled={card.disabled}
+                aria-disabled={card.disabled}
+              >
+                <div className="admin-card__top">
+                  <span className="admin-card__icon" aria-hidden="true">{card.icon}</span>
+                  {card.tag && <span className="admin-card__tag">{card.tag}</span>}
+                </div>
+                <h3 className="admin-card__title">{card.title}</h3>
+                <p className="admin-card__description">{card.description}</p>
+                <div className="admin-card__footer">
+                  <span>{card.disabled ? "Locked" : "Open module"}</span>
+                  <span aria-hidden="true">→</span>
+                </div>
+              </button>
+            ))}
           </div>
         </section>
+
+
       </div>
     </>
   );

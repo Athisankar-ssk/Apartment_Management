@@ -1,6 +1,7 @@
 import express from "express";
 import Admin from "../models/Admin.js";
 import User from "../models/User.js";
+import Security from "../models/Security.js";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 
@@ -64,7 +65,7 @@ router.post("/create-user", async (req, res) => {
   }
 });
 
-// Get user statistics
+// Get user and security statistics
 router.get("/stats", async (req, res) => {
   try {
     const authHeader = req.headers.authorization || "";
@@ -76,11 +77,24 @@ router.get("/stats", async (req, res) => {
     if (!admin) return res.status(401).json({ message: "Invalid admin" });
 
     const totalUsers = await User.countDocuments();
-    console.log("Stats endpoint - Total users count:", totalUsers);
-    res.json({ totalUsers });
+    const totalSecurity = await Security.countDocuments();
+    
+    console.log("Stats endpoint - Total users count:", totalUsers, "Total security count:", totalSecurity);
+    console.log("Security data check - Attempting to fetch all security records...");
+    
+    // Debug: fetch all security records to verify
+    const allSecurity = await Security.find();
+    console.log("All security records count:", allSecurity.length);
+    console.log("Security records:", allSecurity);
+    
+    res.json({ 
+      totalUsers, 
+      totalSecurity,
+      debug: { securityRecordsFound: allSecurity.length }
+    });
   } catch (err) {
     console.error("Error in stats endpoint:", err);
-    res.status(500).json({ message: "Server error" });
+    res.status(500).json({ message: "Server error", error: err.message });
   }
 });
 

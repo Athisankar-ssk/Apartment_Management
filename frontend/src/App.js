@@ -7,6 +7,7 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
+import AdminVisitorMonitoring from "./pages/AdminVisitorMonitoring";
 import UserManagement from "./pages/UserManagement";
 import CreateAccount from "./pages/CreateAccount";
 import ComplaintDetails from "./pages/ComplaintDetails";
@@ -69,6 +70,7 @@ function App() {
         <Route path="/complaints" element={<Complaints />} />
         <Route path="/admin/login" element={<AdminLogin />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
+        <Route path="/admin/visitor-monitoring" element={<AdminVisitorMonitoring />} />
         <Route path="/user-management" element={<UserManagement />} />
         <Route path="/admin/create-account" element={<CreateAccount />} />
         <Route path="/admin/complaint/:id" element={<ComplaintDetails />} />

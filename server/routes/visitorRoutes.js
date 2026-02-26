@@ -2,6 +2,7 @@ import express from "express";
 import Visitor from "../models/Visitor.js";
 import Security from "../models/Security.js";
 import User from "../models/User.js";
+import Admin from "../models/Admin.js";
 import jwt from "jsonwebtoken";
 
 const router = express.Router();
@@ -18,6 +19,25 @@ const verifySecurity = async (req, res, next) => {
     if (!security) return res.status(401).json({ message: "Invalid security user" });
     
     req.security = security;
+    next();
+  } catch (err) {
+    console.error(err);
+    res.status(401).json({ message: "Unauthorized" });
+  }
+};
+
+// Middleware to verify admin token
+const verifyAdmin = async (req, res, next) => {
+  try {
+    const authHeader = req.headers.authorization || "";
+    const token = authHeader.split(" ")[1];
+    if (!token) return res.status(401).json({ message: "Unauthorized" });
+
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const admin = await Admin.findById(decoded.id);
+    if (!admin) return res.status(401).json({ message: "Invalid admin user" });
+
+    req.admin = admin;
     next();
   } catch (err) {
     console.error(err);
@@ -94,6 +114,39 @@ router.get("/all", verifySecurity, async (req, res) => {
 
     const visitors = await Visitor.find(filter)
       .populate('residentId', 'name email mobile')
+      .sort({ inTime: -1 });
+
+    res.json(visitors);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ message: "Server error" });
+  }
+});
+
+// Get all visitor entries for admin monitoring (read-only)
+router.get("/admin/all", verifyAdmin, async (req, res) => {
+  try {
+    const { status, apartmentNumber, date } = req.query;
+    let filter = {};
+
+    if (status && status !== "all") {
+      filter.status = status;
+    }
+
+    if (apartmentNumber) {
+      filter.apartmentNumber = apartmentNumber;
+    }
+
+    if (date === "today") {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+      const endOfDay = new Date();
+      endOfDay.setHours(23, 59, 59, 999);
+      filter.inTime = { $gte: startOfDay, $lte: endOfDay };
+    }
+
+    const visitors = await Visitor.find(filter)
+      .populate("residentId", "name email mobile")
       .sort({ inTime: -1 });
 
     res.json(visitors);

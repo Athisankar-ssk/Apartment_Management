@@ -1,9 +1,14 @@
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
 import Navbar from "../components/Navbar";
 import "./AdminDashboard.css";
 
 function AdminDashboard() {
   const name = localStorage.getItem("adminName");
+  const [visitors, setVisitors] = useState([]);
+  const [visitorsLoading, setVisitorsLoading] = useState(false);
+  const [visitorsError, setVisitorsError] = useState("");
   const navigate = useNavigate();
 
   const handleCardClick = (path) => {
@@ -36,6 +41,45 @@ function AdminDashboard() {
       path: "/admin/billing"
     }
   ];
+
+  useEffect(() => {
+    const adminToken = localStorage.getItem("adminToken");
+    if (!adminToken) {
+      navigate("/admin/login");
+      return;
+    }
+
+    const fetchVisitors = async () => {
+      setVisitorsLoading(true);
+      setVisitorsError("");
+      try {
+        const response = await axios.get("http://localhost:5000/api/visitors/admin/all", {
+          headers: { Authorization: `Bearer ${adminToken}` }
+        });
+        setVisitors(response.data);
+      } catch (err) {
+        console.error("Error fetching visitor details:", err);
+        setVisitorsError("Unable to load visitor details.");
+      } finally {
+        setVisitorsLoading(false);
+      }
+    };
+
+    fetchVisitors();
+  }, [navigate]);
+
+  const formatDateTime = (date) => {
+    if (!date) return "—";
+    const d = new Date(date);
+    return d.toLocaleString("en-IN", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+      hour: "2-digit",
+      minute: "2-digit",
+      second: "2-digit"
+    });
+  };
 
   return (
     <>
@@ -113,6 +157,77 @@ function AdminDashboard() {
               </div>
             </div>
           ))}
+        </section>
+
+        <section style={{ marginTop: "2rem" }}>
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginBottom: "1rem",
+              flexWrap: "wrap",
+              gap: "0.75rem"
+            }}
+          >
+            <div>
+              <h2 style={{ margin: 0, color: "#1e293b" }}>Visitor Monitoring</h2>
+              <p style={{ margin: "0.25rem 0 0", color: "#64748b" }}>
+                View-only access to security logs
+              </p>
+            </div>
+          </div>
+
+          <div style={{ backgroundColor: "white", borderRadius: "12px", border: "1px solid #e2e8f0", overflow: "hidden" }}>
+            <div style={{ padding: "1rem 1.25rem", borderBottom: "1px solid #e2e8f0" }}>
+              <h3 style={{ margin: 0, color: "#1e293b" }}>Latest Visitor Entries</h3>
+            </div>
+
+            {visitorsLoading && (
+              <div style={{ padding: "1.5rem", color: "#64748b" }}>Loading visitor data...</div>
+            )}
+
+            {!visitorsLoading && visitorsError && (
+              <div style={{ padding: "1.5rem", color: "#b91c1c" }}>{visitorsError}</div>
+            )}
+
+            {!visitorsLoading && !visitorsError && visitors.length === 0 && (
+              <div style={{ padding: "1.5rem", color: "#64748b" }}>No visitor entries found.</div>
+            )}
+
+            {!visitorsLoading && !visitorsError && visitors.length > 0 && (
+              <div style={{ overflowX: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.95rem" }}>
+                  <thead>
+                    <tr style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Visitor Name</th>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Phone</th>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Resident Name</th>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Apartment</th>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>In Time</th>
+                      <th style={{ padding: "0.9rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Out Time</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {visitors.map((visitor) => (
+                      <tr key={visitor._id} style={{ borderBottom: "1px solid #e2e8f0" }}>
+                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.visitorName}</td>
+                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.visitorPhone}</td>
+                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.residentName}</td>
+                        <td style={{ padding: "0.9rem", color: "#1e293b" }}>{visitor.apartmentNumber}</td>
+                        <td style={{ padding: "0.9rem", color: "#1e293b", fontSize: "0.9rem" }}>
+                          {formatDateTime(visitor.inTime)}
+                        </td>
+                        <td style={{ padding: "0.9rem", color: "#1e293b", fontSize: "0.9rem" }}>
+                          {formatDateTime(visitor.outTime)}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </div>
         </section>
       </div>
     </>

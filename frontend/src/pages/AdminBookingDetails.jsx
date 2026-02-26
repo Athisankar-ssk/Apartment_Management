@@ -145,7 +145,7 @@ function AdminBookingDetails() {
     }
     if (filterStatus !== "all") {
       filteredPartyHall = filteredPartyHall.filter((booking) => booking.status === filterStatus);
-    }
+    } 
     setFilteredPartyHallBookings(filteredPartyHall);
 
     // Filter meeting hall bookings

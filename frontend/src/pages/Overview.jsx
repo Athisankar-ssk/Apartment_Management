@@ -169,7 +169,7 @@ function Overview() {
               <ul>
                 <li>Water leakage in pipes or fixtures</li>
                 <li>Low water pressure</li>
-                <li>Water quality concerns</li>
+                <li>Water quality concern</li>
                 <li>Blocked drains</li>
                 <li>Water tank cleaning</li>
               </ul>

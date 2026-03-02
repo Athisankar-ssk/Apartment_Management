@@ -61,30 +61,33 @@ function SecurityDashboard() {
       title: "Visitor Management",
       description: "Log and monitor all visitor entries, cab arrivals, food deliveries, and service staff. Manage check-in and check-out.",
       icon: "👥",
-      accent: "#3b82f6",
-      bg: "linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%)",
+      accent: "#2563eb",
+      iconBg: "#eff6ff",
       badge: `${stats.activeVisitors} inside`,
-      badgeColor: "#3b82f6",
+      badgeColor: "#2563eb",
+      badgeBg: "#dbeafe",
       path: "/security/visitor-management"
     },
     {
       title: "Parking Management",
       description: "Track vehicle entries, assigned parking slots, and view real-time parking occupancy across the premises.",
       icon: "🚗",
-      accent: "#10b981",
-      bg: "linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%)",
+      accent: "#0d9488",
+      iconBg: "#f0fdfa",
       badge: `${stats.parkedVehicles} parked`,
-      badgeColor: "#10b981",
+      badgeColor: "#0d9488",
+      badgeBg: "#ccfbf1",
       path: "/security-parking-management"
     },
     {
       title: "Incident Reports",
       description: "Document security incidents, raise alerts, and maintain a log of all on-premises events for admin review.",
       icon: "🚨",
-      accent: "#ef4444",
-      bg: "linear-gradient(135deg, #fff1f1 0%, #fee2e2 100%)",
+      accent: "#d97706",
+      iconBg: "#fffbeb",
       badge: "Coming soon",
-      badgeColor: "#ef4444",
+      badgeColor: "#b45309",
+      badgeBg: "#fef3c7",
       path: "#"
     }
   ];
@@ -95,28 +98,24 @@ function SecurityDashboard() {
 
       {/* ── Hero Banner ── */}
       <div style={{
-        background: "linear-gradient(135deg, #0f172a 0%, #1e3a5f 40%, #1e40af 100%)",
         position: "relative",
         overflow: "hidden",
-        padding: "3rem 2rem 3.5rem"
+        padding: "3rem 2rem 3.5rem",
+        backgroundImage: "url('https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=1600&auto=format&fit=crop&q=80')",
+        backgroundSize: "cover",
+        backgroundPosition: "center 40%",
+        backgroundRepeat: "no-repeat"
       }}>
-        {/* decorative rings */}
-        {[300, 500, 700].map((size, i) => (
-          <div key={i} style={{
-            position: "absolute",
-            top: "50%", right: "-60px",
-            width: `${size}px`, height: `${size}px`,
-            borderRadius: "50%",
-            border: "1px solid rgba(255,255,255,0.07)",
-            transform: "translateY(-50%)",
-            pointerEvents: "none"
-          }} />
-        ))}
-        {/* grid pattern overlay */}
+        {/* light overlay so photo shows brightly but text stays readable */}
         <div style={{
           position: "absolute", inset: 0,
-          backgroundImage: "radial-gradient(rgba(255,255,255,0.04) 1px, transparent 1px)",
-          backgroundSize: "28px 28px",
+          background: "linear-gradient(120deg, rgba(240,249,255,0.82) 0%, rgba(224,242,254,0.78) 50%, rgba(219,234,254,0.80) 100%)",
+          pointerEvents: "none"
+        }} />
+        {/* soft bottom fade */}
+        <div style={{
+          position: "absolute", bottom: 0, left: 0, right: 0, height: "80px",
+          background: "linear-gradient(to bottom, transparent, rgba(224,242,254,0.55))",
           pointerEvents: "none"
         }} />
 
@@ -131,9 +130,10 @@ function SecurityDashboard() {
               backgroundColor: shift.color,
               color: "white",
               letterSpacing: "0.05em",
-              textTransform: "uppercase"
+              textTransform: "uppercase",
+              boxShadow: `0 2px 8px ${shift.color}55`
             }}>{shift.label}</span>
-            <span style={{ color: "rgba(255,255,255,0.6)", fontSize: "0.9rem" }}>
+            <span style={{ color: "#475569", fontSize: "0.9rem", fontWeight: "500" }}>
               🕐 {currentTime.toLocaleTimeString("en-IN", { hour: "2-digit", minute: "2-digit", second: "2-digit" })}
               &nbsp;·&nbsp;
               {currentTime.toLocaleDateString("en-IN", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
@@ -145,17 +145,17 @@ function SecurityDashboard() {
             <div style={{
               width: "64px", height: "64px",
               borderRadius: "50%",
-              background: "linear-gradient(135deg, #3b82f6, #6366f1)",
+              background: "linear-gradient(135deg, #3b82f6, #0ea5e9)",
               display: "flex", alignItems: "center", justifyContent: "center",
               fontSize: "2rem",
-              boxShadow: "0 0 0 4px rgba(99,102,241,0.3)"
+              boxShadow: "0 0 0 4px rgba(59,130,246,0.25), 0 4px 16px rgba(59,130,246,0.3)"
             }}>🛡️</div>
             <div>
-              <h1 style={{ margin: 0, color: "white", fontSize: "2rem", fontWeight: "800", letterSpacing: "-0.02em" }}>
+              <h1 style={{ margin: 0, color: "#0f172a", fontSize: "2rem", fontWeight: "800", letterSpacing: "-0.02em", textShadow: "0 1px 2px rgba(255,255,255,0.6)" }}>
                 Welcome back, {name}
               </h1>
-              <p style={{ margin: "0.35rem 0 0", color: "rgba(255,255,255,0.55)", fontSize: "0.95rem" }}>
-                Security Officer &nbsp;·&nbsp; ID: <strong style={{ color: "rgba(255,255,255,0.8)" }}>{securityId}</strong>
+              <p style={{ margin: "0.35rem 0 0", color: "#334155", fontSize: "0.95rem" }}>
+                Security Officer &nbsp;·&nbsp; ID: <strong style={{ color: "#1e40af" }}>{securityId}</strong>
               </p>
             </div>
           </div>
@@ -170,13 +170,14 @@ function SecurityDashboard() {
               <div key={i} style={{
                 padding: "0.75rem 1.5rem",
                 borderRadius: "12px",
-                backgroundColor: "rgba(255,255,255,0.08)",
-                backdropFilter: "blur(8px)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                display: "flex", flexDirection: "column", alignItems: "center"
+                backgroundColor: "rgba(255,255,255,0.75)",
+                backdropFilter: "blur(10px)",
+                border: "1px solid rgba(255,255,255,0.9)",
+                display: "flex", flexDirection: "column", alignItems: "center",
+                boxShadow: "0 2px 12px rgba(0,0,0,0.08)"
               }}>
                 <span style={{ fontSize: "1.8rem", fontWeight: "800", color: s.color, lineHeight: 1 }}>{s.value}</span>
-                <span style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.55)", marginTop: "0.25rem", whiteSpace: "nowrap" }}>{s.label}</span>
+                <span style={{ fontSize: "0.78rem", color: "#64748b", marginTop: "0.25rem", whiteSpace: "nowrap", fontWeight: "600" }}>{s.label}</span>
               </div>
             ))}
           </div>
@@ -188,8 +189,8 @@ function SecurityDashboard() {
 
         {/* Section label */}
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginBottom: "1.5rem" }}>
-          <div style={{ width: "4px", height: "24px", borderRadius: "2px", background: "linear-gradient(#3b82f6,#6366f1)" }} />
-          <h2 style={{ margin: 0, color: "#1e293b", fontSize: "1.2rem", fontWeight: "700" }}>Security Modules</h2>
+          <div style={{ width: "4px", height: "24px", borderRadius: "2px", background: "linear-gradient(#0ea5e9,#3b82f6)" }} />
+          <h2 style={{ margin: 0, color: "#0f172a", fontSize: "1.2rem", fontWeight: "700" }}>Security Modules</h2>
         </div>
 
         {/* Cards */}
@@ -202,50 +203,52 @@ function SecurityDashboard() {
               tabIndex={0}
               onKeyPress={(e) => { if (e.key === "Enter") navigate(card.path); }}
               style={{
-                background: card.bg,
-                border: `1px solid ${card.accent}22`,
-                borderRadius: "16px",
+                background: "#ffffff",
+                border: "1px solid #e2e8f0",
+                borderLeft: `4px solid ${card.accent}`,
+                borderRadius: "12px",
                 padding: "1.75rem",
                 cursor: "pointer",
-                transition: "all 0.25s ease",
+                transition: "all 0.2s ease",
                 display: "flex",
                 flexDirection: "column",
                 gap: "0.9rem",
                 position: "relative",
                 overflow: "hidden",
-                boxShadow: "0 2px 8px rgba(0,0,0,0.06)"
+                boxShadow: "0 1px 4px rgba(0,0,0,0.07)"
               }}
               onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "translateY(-5px)";
-                e.currentTarget.style.boxShadow = `0 16px 32px ${card.accent}28`;
-                e.currentTarget.style.borderColor = `${card.accent}55`;
+                e.currentTarget.style.transform = "translateY(-4px)";
+                e.currentTarget.style.boxShadow = "0 8px 24px rgba(0,0,0,0.12)";
+                e.currentTarget.style.borderColor = card.accent;
               }}
               onMouseLeave={(e) => {
                 e.currentTarget.style.transform = "translateY(0)";
-                e.currentTarget.style.boxShadow = "0 2px 8px rgba(0,0,0,0.06)";
-                e.currentTarget.style.borderColor = `${card.accent}22`;
+                e.currentTarget.style.boxShadow = "0 1px 4px rgba(0,0,0,0.07)";
+                e.currentTarget.style.borderColor = "#e2e8f0";
+                e.currentTarget.style.borderLeftColor = card.accent;
               }}
             >
               {/* accent top bar */}
-              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "4px", background: `linear-gradient(90deg, ${card.accent}, ${card.accent}88)`, borderRadius: "16px 16px 0 0" }} />
+              <div style={{ position: "absolute", top: 0, left: 0, right: 0, height: "0px" }} />
 
               {/* icon + badge row */}
               <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
                 <div style={{
-                  width: "56px", height: "56px",
-                  borderRadius: "14px",
-                  backgroundColor: `${card.accent}18`,
+                  width: "52px", height: "52px",
+                  borderRadius: "10px",
+                  backgroundColor: card.iconBg,
+                  border: `1px solid ${card.accent}30`,
                   display: "flex", alignItems: "center", justifyContent: "center",
-                  fontSize: "1.8rem"
+                  fontSize: "1.6rem"
                 }}>{card.icon}</div>
                 <span style={{
                   padding: "0.25rem 0.75rem",
-                  borderRadius: "20px",
+                  borderRadius: "6px",
                   fontSize: "0.75rem",
-                  fontWeight: "700",
-                  backgroundColor: `${card.badgeColor}18`,
+                  fontWeight: "600",
+                  backgroundColor: card.badgeBg,
                   color: card.badgeColor,
-                  border: `1px solid ${card.badgeColor}33`,
                   whiteSpace: "nowrap"
                 }}>{card.badge}</span>
               </div>
@@ -257,17 +260,18 @@ function SecurityDashboard() {
                 marginTop: "0.5rem",
                 display: "flex", alignItems: "center", justifyContent: "space-between",
                 paddingTop: "1rem",
-                borderTop: `1px solid ${card.accent}20`
+                borderTop: "1px solid #f1f5f9"
               }}>
-                <span style={{ color: card.accent, fontWeight: "700", fontSize: "0.9rem" }}>Open Module</span>
+                <span style={{ color: card.accent, fontWeight: "600", fontSize: "0.9rem" }}>Open Module</span>
                 <div style={{
-                  width: "32px", height: "32px",
+                  width: "30px", height: "30px",
                   borderRadius: "50%",
-                  backgroundColor: `${card.accent}18`,
+                  backgroundColor: card.iconBg,
                   display: "flex", alignItems: "center", justifyContent: "center",
                   color: card.accent,
-                  fontSize: "1.1rem",
-                  fontWeight: "700"
+                  fontSize: "1rem",
+                  fontWeight: "700",
+                  border: `1px solid ${card.accent}30`
                 }}>→</div>
               </div>
             </div>

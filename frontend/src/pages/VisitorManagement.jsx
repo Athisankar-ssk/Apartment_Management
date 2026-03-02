@@ -13,6 +13,7 @@ function VisitorManagement() {
   const [residents, setResidents] = useState([]);
   const [filterStatus, setFilterStatus] = useState("all");
   const [searchApartment, setSearchApartment] = useState("");
+  const [filterEntryType, setFilterEntryType] = useState("all");
   
   const [formData, setFormData] = useState({
     visitorName: "",
@@ -20,8 +21,30 @@ function VisitorManagement() {
     residentId: "",
     apartmentNumber: "",
     inTime: "",
-    outTime: ""
+    outTime: "",
+    entryType: "Visitor"
   });
+
+  // Show vehicle and driver inputs only for cab/food entries
+  const needsVehicle = formData.entryType === 'Cab Entry' || formData.entryType === 'Food Delivery';
+
+  // Dynamic label and placeholder for visitor/person name based on entry type
+  const nameLabelMap = {
+    'Visitor':              'Visitor Name',
+    'Cab Entry':            'Cab Driver Name',
+    'Food Delivery':        'Delivery Person Name',
+    'Service Staff Entry':  'Staff Name',
+    'Other':                'Visitor Name'
+  };
+  const namePlaceholderMap = {
+    'Visitor':              'Enter visitor name',
+    'Cab Entry':            'Enter cab driver name',
+    'Food Delivery':        'Enter delivery person name',
+    'Service Staff Entry':  'Enter staff name',
+    'Other':                'Enter visitor name'
+  };
+  const visitorNameLabel       = nameLabelMap[formData.entryType]       || 'Visitor Name';
+  const visitorNamePlaceholder = namePlaceholderMap[formData.entryType] || 'Enter visitor name';
 
   // Helper function to format local datetime
   const getLocalDateTime = () => {
@@ -80,6 +103,7 @@ function VisitorManagement() {
       
       if (filterStatus !== "all") params.append("status", filterStatus);
       if (searchApartment) params.append("apartmentNumber", searchApartment);
+      if (filterEntryType && filterEntryType !== 'all') params.append('entryType', filterEntryType);
       
       if (params.toString()) {
         url += "?" + params.toString();
@@ -94,6 +118,13 @@ function VisitorManagement() {
     }
     setLoading(false);
   };
+
+  // Re-fetch visitors when filters change
+  useEffect(() => {
+    // Debounce briefly could be added, but immediate fetch is acceptable
+    fetchVisitors();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [filterStatus, searchApartment, filterEntryType]);
 
   // Handle form input
   const handleInputChange = (e) => {
@@ -130,6 +161,8 @@ function VisitorManagement() {
         visitorPhone: formData.visitorPhone,
         residentId: formData.residentId,
         apartmentNumber: formData.apartmentNumber,
+        entryType: formData.entryType,
+        vehicleNumber: formData.vehicleNumber || null,
         // Backend will capture current system time automatically
         outTime: formData.outTime ? new Date(formData.outTime).toISOString() : null
       };
@@ -145,7 +178,9 @@ function VisitorManagement() {
         residentId: "",
         apartmentNumber: "",
         inTime: new Date().toISOString().slice(0, 16),
-        outTime: ""
+        outTime: "",
+        entryType: "Visitor",
+        vehicleNumber: ""
       });
       setShowForm(false);
       fetchVisitors();
@@ -290,6 +325,24 @@ function VisitorManagement() {
             <option value="left">Has Left</option>
           </select>
 
+          <select
+            value={filterEntryType}
+            onChange={(e) => setFilterEntryType(e.target.value)}
+            style={{
+              padding: "0.75rem 1rem",
+              borderRadius: "8px",
+              border: "1px solid #e2e8f0",
+              fontSize: "1rem"
+            }}
+          >
+            <option value="all">All Entry Types</option>
+            <option value="Visitor">Visitor</option>
+            <option value="Cab Entry">Cab Entry</option>
+            <option value="Food Delivery">Food Delivery</option>
+            <option value="Service Staff Entry">Service Staff Entry</option>
+            <option value="Other">Other</option>
+          </select>
+
           <input
             type="text"
             placeholder="Search by Apartment"
@@ -319,14 +372,14 @@ function VisitorManagement() {
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "1.5rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
-                    Visitor Name *
+                    {visitorNameLabel} *
                   </label>
                   <input
                     type="text"
                     name="visitorName"
                     value={formData.visitorName}
                     onChange={handleInputChange}
-                    placeholder="Enter visitor name"
+                    placeholder={visitorNamePlaceholder}
                     style={{
                       width: "100%",
                       padding: "0.75rem",
@@ -441,6 +494,53 @@ function VisitorManagement() {
                     }}
                   />
                 </div>
+
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
+                    Entry Type
+                  </label>
+                  <select
+                    name="entryType"
+                    value={formData.entryType}
+                    onChange={handleInputChange}
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "1rem"
+                    }}
+                  >
+                    <option value="Visitor">Visitor</option>
+                    <option value="Cab Entry">Cab Entry</option>
+                    <option value="Food Delivery">Food Delivery</option>
+                    <option value="Service Staff Entry">Service Staff Entry</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+
+                {needsVehicle && (
+                  <div>
+                    <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
+                      Vehicle Number *
+                    </label>
+                    <input
+                      type="text"
+                      name="vehicleNumber"
+                      value={formData.vehicleNumber || ""}
+                      onChange={handleInputChange}
+                      placeholder="Enter vehicle number"
+                      style={{
+                        width: "100%",
+                        padding: "0.75rem",
+                        borderRadius: "8px",
+                        border: "1px solid #e2e8f0",
+                        fontSize: "1rem"
+                      }}
+                    />
+                  </div>
+                )}
+
               </div>
 
               <div style={{ display: "flex", gap: "1rem", marginTop: "1.5rem" }}>
@@ -516,6 +616,8 @@ function VisitorManagement() {
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Phone</th>
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Resident Name</th>
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Apartment</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Entry Type</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Vehicle No</th>
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>In Time</th>
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Out Time</th>
                     <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Duration</th>
@@ -530,6 +632,8 @@ function VisitorManagement() {
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.visitorPhone}</td>
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.residentName}</td>
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.apartmentNumber}</td>
+                      <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.entryType || 'Visitor'}</td>
+                      <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.vehicleNumber || '—'}</td>
                       <td style={{ padding: "1rem", color: "#1e293b", fontSize: "0.9rem" }}>{formatDateTime(visitor.inTime)}</td>
                       <td style={{ padding: "1rem", color: "#1e293b", fontSize: "0.9rem" }}>{formatDateTime(visitor.outTime)}</td>
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{calculateDuration(visitor.inTime, visitor.outTime)}</td>

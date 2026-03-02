@@ -14,6 +14,7 @@ function AdminVisitorMonitoring() {
   const [searchTerm, setSearchTerm] = useState("");
   const [searchField, setSearchField] = useState("name");
   const [filterDate, setFilterDate] = useState("");
+  const [filterEntryType, setFilterEntryType] = useState("all");
 
   useEffect(() => {
     const adminToken = localStorage.getItem("adminToken");
@@ -27,7 +28,7 @@ function AdminVisitorMonitoring() {
 
   useEffect(() => {
     applyFilters();
-  }, [visitors, searchTerm, searchField, filterDate]);
+  }, [visitors, searchTerm, searchField, filterDate, filterEntryType]);
 
   const fetchVisitors = async () => {
     setLoading(true);
@@ -57,9 +58,16 @@ function AdminVisitorMonitoring() {
           return visitor.visitorName.toLowerCase().includes(term);
         } else if (searchField === "apartment") {
           return visitor.apartmentNumber.toLowerCase().includes(term);
+        } else if (searchField === "vehicle") {
+          return (visitor.vehicleNumber || "").toLowerCase().includes(term);
         }
         return true;
       });
+    }
+
+    // Apply entry type filter
+    if (filterEntryType && filterEntryType !== "all") {
+      filtered = filtered.filter((visitor) => visitor.entryType === filterEntryType);
     }
 
     // Apply date filter
@@ -90,6 +98,7 @@ function AdminVisitorMonitoring() {
     setSearchTerm("");
     setFilterDate("");
     setSearchField("name");
+    setFilterEntryType("all");
   };
 
   return (
@@ -153,6 +162,7 @@ function AdminVisitorMonitoring() {
             >
               <option value="name">Visitor Name</option>
               <option value="apartment">Apartment Number</option>
+              <option value="vehicle">Vehicle Number</option>
             </select>
           </div>
 
@@ -172,6 +182,29 @@ function AdminVisitorMonitoring() {
                 fontSize: "1rem"
               }}
             />
+          </div>
+
+          <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
+            <label style={{ fontWeight: "600", color: "#1e293b", fontSize: "0.9rem" }}>
+              Filter by Entry Type
+            </label>
+            <select
+              value={filterEntryType}
+              onChange={(e) => setFilterEntryType(e.target.value)}
+              style={{
+                padding: "0.75rem",
+                borderRadius: "8px",
+                border: "1px solid #e2e8f0",
+                fontSize: "1rem"
+              }}
+            >
+              <option value="all">All Entry Types</option>
+              <option value="Visitor">Visitor</option>
+              <option value="Cab Entry">Cab Entry</option>
+              <option value="Food Delivery">Food Delivery</option>
+              <option value="Service Staff Entry">Service Staff Entry</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
 
           <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem" }}>
@@ -256,66 +289,15 @@ function AdminVisitorMonitoring() {
               >
                 <thead>
                   <tr style={{ backgroundColor: "#f8fafc", borderBottom: "2px solid #e2e8f0" }}>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      Visitor Name
-                    </th>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      Phone Number
-                    </th>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      Resident Name
-                    </th>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      Apartment Number
-                    </th>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      In Time
-                    </th>
-                    <th
-                      style={{
-                        padding: "1rem",
-                        textAlign: "left",
-                        fontWeight: "700",
-                        color: "#1e293b"
-                      }}
-                    >
-                      Out Time
-                    </th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Visitor Name</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Phone Number</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Resident Name</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Apartment</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Entry Type</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Vehicle No</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>In Time</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Out Time</th>
+                    <th style={{ padding: "1rem", textAlign: "left", fontWeight: "700", color: "#1e293b" }}>Status</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -325,11 +307,26 @@ function AdminVisitorMonitoring() {
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.visitorPhone}</td>
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.residentName}</td>
                       <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.apartmentNumber}</td>
+                      <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.entryType || 'Visitor'}</td>
+                      <td style={{ padding: "1rem", color: "#1e293b" }}>{visitor.vehicleNumber || '—'}</td>
                       <td style={{ padding: "1rem", color: "#1e293b", fontSize: "0.9rem" }}>
                         {formatDateTime(visitor.inTime)}
                       </td>
                       <td style={{ padding: "1rem", color: "#1e293b", fontSize: "0.9rem" }}>
                         {formatDateTime(visitor.outTime)}
+                      </td>
+                      <td style={{ padding: "1rem" }}>
+                        <span style={{
+                          display: "inline-block",
+                          padding: "0.25rem 0.75rem",
+                          borderRadius: "20px",
+                          fontSize: "0.85rem",
+                          fontWeight: "600",
+                          backgroundColor: visitor.status === 'inside' ? '#fef3c7' : '#d1fae5',
+                          color: visitor.status === 'inside' ? '#92400e' : '#065f46'
+                        }}>
+                          {visitor.status === 'inside' ? 'Inside' : 'Left'}
+                        </span>
                       </td>
                     </tr>
                   ))}

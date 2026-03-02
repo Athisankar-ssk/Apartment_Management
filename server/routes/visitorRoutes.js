@@ -5,6 +5,8 @@ import User from "../models/User.js";
 import Admin from "../models/Admin.js";
 import jwt from "jsonwebtoken";
 
+const ENTRY_TYPES = ['Visitor', 'Cab Entry', 'Food Delivery', 'Service Staff Entry', 'Other'];
+
 const router = express.Router();
 
 // Middleware to verify security token
@@ -48,10 +50,19 @@ const verifyAdmin = async (req, res, next) => {
 // Add new visitor entry
 router.post("/add", verifySecurity, async (req, res) => {
   try {
-    const { visitorName, visitorPhone, residentId, apartmentNumber, outTime } = req.body;
+    const { visitorName, visitorPhone, residentId, apartmentNumber, outTime, entryType, vehicleNumber } = req.body;
 
     if (!visitorName || !visitorPhone || !residentId || !apartmentNumber) {
       return res.status(400).json({ message: "Required fields missing" });
+    }
+
+    if (entryType && !ENTRY_TYPES.includes(entryType)) {
+      return res.status(400).json({ message: "Invalid entryType" });
+    }
+
+    // For Cab Entry and Food Delivery, vehicleNumber is required
+    if ((entryType === 'Cab Entry' || entryType === 'Food Delivery')) {
+      if (!vehicleNumber) return res.status(400).json({ message: "vehicleNumber is required for Cab Entry and Food Delivery" });
     }
 
     // Verify resident exists
@@ -73,9 +84,11 @@ router.post("/add", verifySecurity, async (req, res) => {
       residentName: resident.name,
       residentId,
       apartmentNumber,
-      inTime: new Date(), // Always capture current server time
+      inTime: new Date(),
       outTime: outTime ? new Date(outTime) : null,
       status: status,
+      entryType: entryType ? entryType : 'Visitor',
+      vehicleNumber: vehicleNumber ? vehicleNumber : null,
       securityId: req.security._id
     });
 
@@ -90,7 +103,7 @@ router.post("/add", verifySecurity, async (req, res) => {
 // Get all visitor entries with optional filtering
 router.get("/all", verifySecurity, async (req, res) => {
   try {
-    const { status, apartmentNumber, date } = req.query;
+    const { status, apartmentNumber, date, entryType } = req.query;
     let filter = {};
 
     // Filter by status
@@ -101,6 +114,11 @@ router.get("/all", verifySecurity, async (req, res) => {
     // Filter by apartment number
     if (apartmentNumber) {
       filter.apartmentNumber = apartmentNumber;
+    }
+
+    // Filter by entry type
+    if (entryType && entryType !== 'all') {
+      filter.entryType = entryType;
     }
 
     // Filter by date (today)
@@ -126,7 +144,7 @@ router.get("/all", verifySecurity, async (req, res) => {
 // Get all visitor entries for admin monitoring (read-only)
 router.get("/admin/all", verifyAdmin, async (req, res) => {
   try {
-    const { status, apartmentNumber, date } = req.query;
+    const { status, apartmentNumber, date, entryType } = req.query;
     let filter = {};
 
     if (status && status !== "all") {
@@ -135,6 +153,10 @@ router.get("/admin/all", verifyAdmin, async (req, res) => {
 
     if (apartmentNumber) {
       filter.apartmentNumber = apartmentNumber;
+    }
+
+    if (entryType && entryType !== 'all') {
+      filter.entryType = entryType;
     }
 
     if (date === "today") {
@@ -200,7 +222,7 @@ router.put("/:id/checkout", verifySecurity, async (req, res) => {
 // Update visitor details (except status and times)
 router.put("/:id", verifySecurity, async (req, res) => {
   try {
-    const { visitorName, visitorPhone } = req.body;
+    const { visitorName, visitorPhone, entryType, vehicleNumber, vehicleDriverName } = req.body;
     
     const visitor = await Visitor.findById(req.params.id);
     if (!visitor) {
@@ -210,6 +232,20 @@ router.put("/:id", verifySecurity, async (req, res) => {
     // Update allowed fields only
     if (visitorName) visitor.visitorName = visitorName;
     if (visitorPhone) visitor.visitorPhone = visitorPhone;
+    if (entryType) {
+      if (!ENTRY_TYPES.includes(entryType)) {
+        return res.status(400).json({ message: "Invalid entryType" });
+      }
+      visitor.entryType = entryType;
+    }
+
+    if (vehicleNumber !== undefined) {
+      visitor.vehicleNumber = vehicleNumber;
+    }
+
+    if (vehicleDriverName !== undefined) {
+      visitor.vehicleDriverName = vehicleDriverName;
+    }
 
     await visitor.save();
     res.json({ message: "Visitor details updated successfully", visitor });

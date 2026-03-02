@@ -9,6 +9,9 @@ const visitorSchema = new mongoose.Schema({
   inTime: { type: Date, required: true },
   outTime: { type: Date },
   status: { type: String, enum: ['inside', 'left'], default: 'inside' },
+  entryType: { type: String, enum: ['Visitor', 'Cab Entry', 'Food Delivery', 'Service Staff Entry', 'Other'], default: 'Visitor' },
+  vehicleNumber: { type: String },
+  vehicleDriverName: { type: String },
   securityId: { type: mongoose.Schema.Types.ObjectId, required: true, ref: 'Security' }
 }, { timestamps: true });
 

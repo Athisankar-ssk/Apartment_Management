@@ -135,7 +135,7 @@ function VisitorManagement() {
     }));
   };
 
-  // Handle resident selection
+  // Handle resident selection (by name dropdown → auto-fills apartment)
   const handleResidentChange = (e) => {
     const residentId = e.target.value;
     const resident = residents.find(r => r._id === residentId);
@@ -410,6 +410,28 @@ function VisitorManagement() {
                   />
                 </div>
 
+                {/* Apartment Number — typed by security */}
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
+                    Apartment Number *
+                  </label>
+                  <input
+                    type="text"
+                    name="apartmentNumber"
+                    value={formData.apartmentNumber}
+                    onChange={handleInputChange}
+                    placeholder="e.g. B-204"
+                    style={{
+                      width: "100%",
+                      padding: "0.75rem",
+                      borderRadius: "8px",
+                      border: "1px solid #e2e8f0",
+                      fontSize: "1rem"
+                    }}
+                  />
+                </div>
+
+                {/* Resident to Visit */}
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
                     Resident to Visit *
@@ -433,27 +455,6 @@ function VisitorManagement() {
                       </option>
                     ))}
                   </select>
-                </div>
-
-                <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontWeight: "600", color: "#1e293b" }}>
-                    Apartment Number *
-                  </label>
-                  <input
-                    type="text"
-                    name="apartmentNumber"
-                    value={formData.apartmentNumber}
-                    readOnly
-                    placeholder="Auto-filled"
-                    style={{
-                      width: "100%",
-                      padding: "0.75rem",
-                      borderRadius: "8px",
-                      border: "1px solid #e2e8f0",
-                      fontSize: "1rem",
-                      backgroundColor: "#f1f5f9"
-                    }}
-                  />
                 </div>
 
                 <div>

@@ -6,6 +6,12 @@
   min-height: 80vh;
   max-height: calc(100vh - 80px);
   overflow-y: auto;
+  background-color: #f0f4f9;
+  background-image:
+    linear-gradient(145deg, rgba(240, 244, 255, 0.98) 0%, rgba(247, 249, 252, 0.99) 50%, rgba(238, 248, 244, 0.97) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><rect width='280' height='280' fill='none'/><circle cx='50' cy='60' r='40' fill='%23e0e7ff' fill-opacity='0.5'/><circle cx='230' cy='180' r='55' fill='%23dbeafe' fill-opacity='0.4'/><circle cx='140' cy='240' r='30' fill='%23d1fae5' fill-opacity='0.35'/><path d='M0 140h280' stroke='%23c7d2fe' stroke-width='1' stroke-opacity='0.3'/></svg>");
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 280px 280px;
 }
 
 .admin-dashboard--home {
@@ -328,14 +334,19 @@
   justify-content: space-between;
   align-items: center;
   margin-bottom: 1.25rem;
-  padding-bottom: 0.75rem;
-  border-bottom: 2px solid #e1e8ed;
+  padding: 1rem 1.5rem;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.85);
+  border: 1px solid rgba(199, 210, 254, 0.5);
+  box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
 }
 
 .admin-header h1 {
-  color: #2c3e50;
+  color: #1e293b;
   font-size: 1.75rem;
   margin-bottom: 0;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .admin-grid {
@@ -346,11 +357,12 @@
 }
 
 .card {
-  background: white;
+  background: rgba(255, 255, 255, 0.92);
   padding: 1.5rem;
-  border-radius: 10px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.08);
-  border: 1px solid #e1e8ed;
+  border-radius: 12px;
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+  border: 1px solid rgba(199, 210, 254, 0.35);
+  backdrop-filter: blur(4px);
 }
 
 .card h3 {

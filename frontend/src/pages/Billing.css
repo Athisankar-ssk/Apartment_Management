@@ -2,8 +2,13 @@
   padding: 2rem;
   max-width: 1400px;
   margin: 0 auto;
-  background-color: #f5f5f5;
   min-height: 100vh;
+  background-color: #f0f4f9;
+  background-image:
+    linear-gradient(145deg, rgba(240, 244, 255, 0.98) 0%, rgba(247, 249, 252, 0.99) 50%, rgba(238, 248, 244, 0.97) 100%),
+    url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280' viewBox='0 0 280 280'><rect width='280' height='280' fill='none'/><circle cx='50' cy='60' r='40' fill='%23e0e7ff' fill-opacity='0.5'/><circle cx='230' cy='180' r='55' fill='%23dbeafe' fill-opacity='0.4'/><circle cx='140' cy='240' r='30' fill='%23d1fae5' fill-opacity='0.35'/></svg>");
+  background-repeat: no-repeat, repeat;
+  background-size: cover, 280px 280px;
 }
 
 .billing-header {
@@ -13,12 +18,14 @@
 
 .billing-header h1 {
   font-size: 2rem;
-  color: #333;
+  color: #1e293b;
   margin-bottom: 0.5rem;
+  font-weight: 700;
+  letter-spacing: -0.01em;
 }
 
 .billing-header p {
-  color: #666;
+  color: #475569;
   font-size: 1rem;
 }
 
@@ -105,10 +112,12 @@
 }
 
 .billing-content {
-  background: white;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.92);
+  border-radius: 12px;
   padding: 2rem;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 16px rgba(15, 23, 42, 0.07);
+  border: 1px solid rgba(199, 210, 254, 0.35);
+  backdrop-filter: blur(4px);
 }
 
 .bill-section {

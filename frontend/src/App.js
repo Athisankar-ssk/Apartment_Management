@@ -34,6 +34,7 @@ import MeetingHallBooking from "./pages/MeetingHallBooking";
 import VehicleParkingSlotBooking from "./pages/VehicleParkingSlotBooking";
 import AdminBookingDetails from "./pages/AdminBookingDetails";
 import Billing from "./pages/Billing";
+import CourierNotification from "./pages/CourierNotification";
 import UserElectricityBilling from "./pages/UserElectricityBilling";
 import UserMaintenanceBilling from "./pages/UserMaintenanceBilling";
 
@@ -52,6 +53,7 @@ function App() {
         <Route path="/security/dashboard" element={<SecurityDashboard />} />
         <Route path="/security/visitor-management" element={<VisitorManagement />} />
         <Route path="/security-parking-management" element={<SecurityParkingManagement />} />
+        <Route path="/security/courier-notifications" element={<CourierNotification />} />
         <Route path="/user/grievance/electricity" element={<ElectricityComplaint />} />
         <Route path="/user/grievance/water" element={<WaterComplaint />} />
         <Route path="/user/grievance/cleaning" element={<CleaningComplaint />} />

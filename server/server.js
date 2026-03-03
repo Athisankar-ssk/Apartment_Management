@@ -13,6 +13,7 @@ import meetingHallRoutes from "./routes/meetingHallRoutes.js";
 import parkingRoutes from "./routes/parkingRoutes.js";
 import billingRoutes from "./routes/billingRoutes.js";
 import visitorRoutes from "./routes/visitorRoutes.js";
+import courierRoutes from "./routes/courierRoutes.js";
 import { createAdmin } from "./createAdmin.js";
 
 
@@ -41,6 +42,7 @@ app.use("/api/meeting-hall", meetingHallRoutes);
 app.use("/api/parking", parkingRoutes);
 app.use("/api/billing", billingRoutes);
 app.use("/api/visitors", visitorRoutes);
+app.use("/api/courier", courierRoutes);
 
 app.get("/api/health", (req, res) => {
   res.json({ status: "OK" });

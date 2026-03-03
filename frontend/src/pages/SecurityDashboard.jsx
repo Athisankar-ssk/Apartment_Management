@@ -80,15 +80,15 @@ function SecurityDashboard() {
       path: "/security-parking-management"
     },
     {
-      title: "Incident Reports",
-      description: "Document security incidents, raise alerts, and maintain a log of all on-premises events for admin review.",
-      icon: "🚨",
-      accent: "#d97706",
+      title: "Courier Notifications",
+      description: "Log courier and parcel arrivals, notify residents to collect deliveries, and track pending pickups.",
+      icon: "📦",
+      accent: "#f59e0b",
       iconBg: "#fffbeb",
-      badge: "Coming soon",
+      badge: `${stats.activeVisitors >= 0 ? "Active" : ""} module`,
       badgeColor: "#b45309",
       badgeBg: "#fef3c7",
-      path: "#"
+      path: "/security/courier-notifications"
     }
   ];
 

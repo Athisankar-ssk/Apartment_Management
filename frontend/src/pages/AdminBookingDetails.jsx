@@ -627,7 +627,7 @@ function AdminBookingDetails() {
                           <td style={tableCellStyle}>
                             {booking.status === "pending" ? (
                               <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#fef3c7", color: "#92400e", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>
-                                Pendin
+                                Pending
                               </span>
                             ) : booking.status === "approved" ? (
                               <span style={{ padding: "0.25rem 0.75rem", backgroundColor: "#d4edda", color: "#155724", borderRadius: "4px", fontSize: "0.875rem", fontWeight: "500", textTransform: "capitalize" }}>

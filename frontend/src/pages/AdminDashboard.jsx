@@ -123,7 +123,7 @@ function AdminDashboard() {
         <section className="admin-section">
           <div className="admin-section__header">
             <div>
-              <h2 className="admin-section__title">Quick Module</h2>
+              <h2 className="admin-section__title">Quick Modules</h2>
               <p className="admin-section__subtitle">Navigate core tools from a single view.</p>
             </div>
           </div>

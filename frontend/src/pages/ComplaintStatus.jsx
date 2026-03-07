@@ -64,7 +64,7 @@ function ComplaintStatus() {
   return (
     <>
       <UserNavbar />
-      <div className="admin-dashboard">
+      <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
           <h1>My Complaint Status</h1>
         </header>

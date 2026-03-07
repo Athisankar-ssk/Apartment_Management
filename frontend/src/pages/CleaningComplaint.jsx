@@ -43,7 +43,7 @@ function CleaningComplaint() {
   return (
     <>
       <UserNavbar />
-      <div className="admin-dashboard">
+      <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
           <h1>Cleaning Complaint</h1>
         </header>

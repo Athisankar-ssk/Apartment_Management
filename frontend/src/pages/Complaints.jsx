@@ -56,7 +56,7 @@ function Complaints() {
   return (
     <>
       <Navbar />
-      <div className="admin-dashboard">
+      <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
           <h1>All Complaints</h1>
           <div style={{ display: "flex", gap: "0.5rem" }}>

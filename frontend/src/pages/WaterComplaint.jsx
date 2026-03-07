@@ -43,7 +43,7 @@ function WaterComplaint() {
   return (
     <>
       <UserNavbar />
-      <div className="admin-dashboard">
+      <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
           <h1>Water Complaint</h1>
         </header>

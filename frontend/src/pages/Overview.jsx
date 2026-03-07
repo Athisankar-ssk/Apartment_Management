@@ -156,7 +156,7 @@ function Overview() {
           <div className="maintenance-content">
             <div className="maintenance-images">
               <img
-                src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80"
                 alt="Water pipeline maintenance"
               />
               <img
@@ -220,7 +220,7 @@ function Overview() {
                 alt="Modern elevator interior"
               />
               <img
-                src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80"
                 alt="Elevator maintenance"
               />
             </div>

@@ -156,12 +156,12 @@ function Overview() {
           <div className="maintenance-content">
             <div className="maintenance-images">
               <img
-                src="https://images.unsplash.com/photo-1581092160562-40aa08e78837?auto=format&fit=crop&w=800&q=80"
-                alt="Water pipeline maintenance"
+                src="https://imagesvs.oneindia.com/webp/img/2024/03/water-crisis-small-1709876433.jpg"
+                alt="Water crisis issue"
               />
               <img
-                src="https://images.unsplash.com/photo-1607400201889-565b1ee75f8e?auto=format&fit=crop&w=800&q=80"
-                alt="Plumbing repairs"
+                src="https://th-i.thgim.com/public/incoming/ytu5my/article70329458.ece/alternates/FREE_1200/IMG_BL0610_Quantum_Secon_2_1_OVF00MEA.jpg"
+                alt="Water issue"
               />
             </div>
             <div className="maintenance-info">
@@ -186,11 +186,11 @@ function Overview() {
           <div className="maintenance-content">
             <div className="maintenance-images">
               <img
-                src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1509391366360-2e959784a276?auto=format&fit=crop&w=800&q=80"
                 alt="Electrical panel maintenance"
               />
               <img
-                src="https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=800&q=80"
+                src="https://images.unsplash.com/photo-1621905251189-08b45d6a269e?auto=format&fit=crop&w=800&q=80"
                 alt="Electrician working"
               />
             </div>
@@ -216,11 +216,11 @@ function Overview() {
           <div className="maintenance-content">
             <div className="maintenance-images">
               <img
-                src="https://images.unsplash.com/photo-1562095241-8c6714fd4178?auto=format&fit=crop&w=800&q=80"
-                alt="Modern elevator interior"
+                src="https://www.shutterstock.com/image-photo/elevator-apartment-house-260nw-2298995393.jpg"
+                alt="Elevator in apartment house"
               />
               <img
-                src="https://images.unsplash.com/photo-1581092918056-0c4c3acd3789?auto=format&fit=crop&w=800&q=80"
+                src="https://cooperatornews.com/_data/ny/articles/9348_image1.jpg?w=793"
                 alt="Elevator maintenance"
               />
             </div>

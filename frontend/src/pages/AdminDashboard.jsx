@@ -94,7 +94,7 @@ function AdminDashboard() {
   return (
     <>
       <Navbar />
-      <div className="admin-dashboard admin-dashboard--home">
+      <div className="admin-dashboard user-dashboard--home">
         <header className="admin-hero">
           <div className="admin-hero__content">
             <p className="admin-hero__eyebrow">Admin Control Center</p>

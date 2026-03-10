@@ -3,6 +3,7 @@ import jwt from "jsonwebtoken";
 import Security from "../models/Security.js";
 import User from "../models/User.js";
 import CourierNotification from "../models/CourierNotification.js";
+import { sendCourierEmail } from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -37,6 +38,27 @@ router.post("/", verifySecurity, async (req, res) => {
       notifiedBy: req.officer.name,
       securityId: req.officer.securityId,
     });
+
+    // Send email notification to the resident (fire-and-forget — never block the response)
+    try {
+      const resident = await User.findOne({ apartmentNumber }).select("email");
+      if (resident?.email) {
+        sendCourierEmail({
+          toEmail: resident.email,
+          residentName,
+          apartmentNumber,
+          courierType,
+          courierFrom: courierFrom || "",
+          description: description || "",
+          notifiedBy: req.officer.name,
+        }).catch(err => console.error("[mailer] Email send failed:", err.message));
+      } else {
+        console.warn(`[courier] No email found for apartment ${apartmentNumber}`);
+      }
+    } catch (emailErr) {
+      console.error("[courier] Resident lookup for email failed:", emailErr.message);
+    }
+
     res.status(201).json({ message: "Courier notification logged successfully", notification });
   } catch (err) {
     console.error(err);

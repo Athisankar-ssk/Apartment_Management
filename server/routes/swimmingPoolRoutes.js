@@ -1,6 +1,7 @@
 import express from 'express';
 import SwimmingPoolBooking from '../models/SwimmingPoolBooking.js';
 import User from '../models/User.js';
+import { sendComplaintNotificationToAdmin } from '../utils/mailer.js';
 import jwt from 'jsonwebtoken';
 import { canCancelBefore } from '../utils/cancellation.js';
 
@@ -149,6 +150,28 @@ router.post('/book', authenticateUser, async (req, res) => {
     });
 
     await newBooking.save();
+    // Notify admin about the new swimming pool booking (best-effort)
+    try {
+      const mailSent = await sendComplaintNotificationToAdmin({
+        complaintId: newBooking._id,
+        category: 'Swimming Pool Booking',
+        subject: `Swimming Pool on ${date} ${startTime}-${endTime}`,
+        description: `Duration: ${duration} hour(s)\nPeople: ${numberOfPeople}`,
+        urgency: 'N/A',
+        userName: user.name,
+        userEmail: user.email,
+        apartmentNumber: user.apartmentNumber || 'N/A',
+        mobile: user.mobile || '',
+        submittedAt: newBooking.createdAt,
+      });
+
+      if (!mailSent) {
+        console.warn(`Admin email not sent for swimming pool booking ${newBooking._id}`);
+      }
+    } catch (mailErr) {
+      console.error('Failed to send swimming pool booking email to admin:', mailErr);
+    }
+
     res.status(201).json({ 
       message: 'Swimming pool booked successfully', 
       booking: newBooking 

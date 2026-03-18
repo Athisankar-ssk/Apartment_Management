@@ -1,4 +1,5 @@
 import express from "express";
+import dns from "dns";
 import cors from "cors";
 import dotenv from "dotenv";
 import connectDB from "./config/db.js";
@@ -18,6 +19,13 @@ import { createAdmin } from "./createAdmin.js";
 
 
 dotenv.config();
+
+// Prefer IPv4 addresses first to avoid IPv6 ENETUNREACH issues on some networks
+try {
+  dns.setDefaultResultOrder && dns.setDefaultResultOrder('ipv4first');
+} catch (e) {
+  console.warn('Could not set DNS result order to ipv4first:', e.message || e);
+}
 
 
 connectDB().then(() => {

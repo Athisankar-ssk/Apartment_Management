@@ -1,6 +1,7 @@
 import express from 'express';
 import PlaygroundBooking from '../models/PlaygroundBooking.js';
 import User from '../models/User.js';
+import { sendComplaintNotificationToAdmin } from '../utils/mailer.js';
 import jwt from 'jsonwebtoken';
 import { canCancelBefore } from '../utils/cancellation.js';
 
@@ -142,6 +143,28 @@ router.post('/book', authenticateUser, async (req, res) => {
     });
 
     await newBooking.save();
+    // Notify admin about the new playground booking (best-effort)
+    try {
+      const mailSent = await sendComplaintNotificationToAdmin({
+        complaintId: newBooking._id,
+        category: 'Playground Booking',
+        subject: `Playground on ${date} ${startTime}-${endTime}`,
+        description: `Duration: ${duration} hour(s)`,
+        urgency: 'N/A',
+        userName: user.name,
+        userEmail: user.email,
+        apartmentNumber: user.apartmentNumber || 'N/A',
+        mobile: user.mobile || '',
+        submittedAt: newBooking.createdAt,
+      });
+
+      if (!mailSent) {
+        console.warn(`Admin email not sent for playground booking ${newBooking._id}`);
+      }
+    } catch (mailErr) {
+      console.error('Failed to send playground booking email to admin:', mailErr);
+    }
+
     res.status(201).json({ 
       message: 'Playground booked successfully', 
       booking: newBooking 

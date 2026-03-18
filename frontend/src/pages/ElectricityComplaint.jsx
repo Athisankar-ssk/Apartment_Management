@@ -35,7 +35,20 @@ function ElectricityComplaint() {
       setIsError(false);
       setFormData({ category: "Electricity", subject: "", description: "", urgency: "medium" });
     } catch (err) {
-      setMessage(err.response?.data?.message || "Failed to register complaint");
+      const status = err.response?.status;
+      const errMsg = err.response?.data?.message || "Failed to register complaint";
+
+      if (status === 401) {
+        // token is missing/invalid/expired — clear stored auth and force re-login
+        localStorage.removeItem("userToken");
+        localStorage.removeItem("userName");
+        setMessage("Session expired or invalid. Please log in again.");
+        setIsError(true);
+        navigate("/user/login");
+        return;
+      }
+
+      setMessage(errMsg);
       setIsError(true);
     }
   };

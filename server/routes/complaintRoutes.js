@@ -2,6 +2,10 @@ import express from "express";
 import jwt from "jsonwebtoken";
 import Complaint from "../models/Complaint.js";
 import User from "../models/User.js";
+import {
+  sendComplaintNotificationToAdmin,
+  sendComplaintResolvedToUser,
+} from "../utils/mailer.js";
 
 const router = express.Router();
 
@@ -32,6 +36,29 @@ router.post("/submit", verifyToken, async (req, res) => {
       description,
       urgency
     });
+
+    // Notify admin about the new complaint (best-effort)
+    try {
+      const user = await User.findById(req.userId).select("name email apartmentNumber mobile");
+      const mailSent = await sendComplaintNotificationToAdmin({
+        complaintId: complaint._id,
+        category,
+        subject,
+        description,
+        urgency,
+        userName: user?.name || "Unknown",
+        userEmail: user?.email || "",
+        apartmentNumber: user?.apartmentNumber || "",
+        mobile: user?.mobile || "",
+        submittedAt: complaint.createdAt,
+      });
+
+      if (!mailSent) {
+        console.warn(`Admin email not sent for complaint ${complaint._id} — check EMAIL_USER/EMAIL_PASS`);
+      }
+    } catch (mailErr) {
+      console.error("Failed to send complaint notification to admin:", mailErr);
+    }
 
     res.status(201).json({ message: "Complaint submitted successfully", complaint });
   } catch (err) {
@@ -97,6 +124,28 @@ router.patch("/:id/status", verifyToken, async (req, res) => {
 
     if (!complaint) {
       return res.status(404).json({ message: "Complaint not found" });
+    }
+
+    // If status changed to 'resolved', notify the resident (best-effort)
+    try {
+      if (String(status).toLowerCase() === "resolved") {
+        const user = complaint.userId;
+        if (user?.email) {
+          const resolvedMail = await sendComplaintResolvedToUser({
+            toEmail: user.email,
+            residentName: user.name || "Resident",
+            complaintId: complaint._id,
+            subject: complaint.subject,
+            resolvedAt: new Date(),
+          });
+
+          if (!resolvedMail) {
+            console.warn(`Resolution email not sent for complaint ${complaint._id} — check EMAIL_USER/EMAIL_PASS`);
+          }
+        }
+      }
+    } catch (mailErr) {
+      console.error("Failed to send resolved email to user:", mailErr);
     }
 
     res.json({ message: "Status updated successfully", complaint });

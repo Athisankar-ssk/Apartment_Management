@@ -77,7 +77,7 @@ function Complaints() {
 
         {loading ? (
           <div className="card">
-            <p style={{ textAlign: "center", color: "#64748b" }}>Loading complaints..</p>
+            <p style={{ textAlign: "center", color: "#64748b" }}>Loading complaints...</p>
           </div>
         ) : filteredComplaints.length === 0 ? (
           <div className="card">

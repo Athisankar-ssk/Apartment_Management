@@ -2,6 +2,7 @@ import express from 'express';
 import VehicleParking from '../models/VehicleParking.js';
 import User from '../models/User.js';
 import jwt from 'jsonwebtoken';
+import { sendParkingDecisionEmail, sendParkingRequestNotificationToAdmin } from '../utils/mailer.js';
 
 const router = express.Router();
 
@@ -111,9 +112,34 @@ router.post('/request-slot', authenticateUser, async (req, res) => {
     });
 
     await parkingRequest.save();
+
+    let adminEmailSent = false;
+    try {
+      adminEmailSent = await sendParkingRequestNotificationToAdmin({
+        requestId: parkingRequest._id,
+        residentName: user.name,
+        residentEmail: user.email,
+        apartmentNumber: user.apartmentNumber,
+        slotName: parkingRequest.slotName,
+        slotId: parkingRequest.slotId,
+        vehicleType: parkingRequest.vehicleType,
+        vehicleNumber: parkingRequest.vehicleNumber,
+        requestedAt: parkingRequest.createdAt,
+      });
+
+      if (!adminEmailSent) {
+        console.warn(`Admin parking-request email not sent for booking ${parkingRequest._id}`);
+      }
+    } catch (mailErr) {
+      console.error('Failed to send parking request email to admin:', mailErr);
+    }
+
     res.status(201).json({
-      message: 'Parking slot request submitted successfully. Waiting for admin approval.',
-      parkingRequest
+      message: adminEmailSent
+        ? 'Parking slot request submitted successfully. Admin has been notified by email.'
+        : 'Parking slot request submitted successfully. Waiting for admin approval.',
+      parkingRequest,
+      adminEmailSent,
     });
   } catch (error) {
     console.error('Error requesting slot:', error);
@@ -205,11 +231,57 @@ router.post('/admin/approve/:bookingId', async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
+    if (booking.status !== 'pending') {
+      return res.status(400).json({ message: 'Only pending parking requests can be approved' });
+    }
+
+    const alreadyApprovedForSlot = await VehicleParking.findOne({
+      _id: { $ne: booking._id },
+      slotId: booking.slotId,
+      status: 'approved'
+    });
+
+    if (alreadyApprovedForSlot) {
+      return res.status(400).json({ message: 'This slot has already been approved for another resident' });
+    }
+
     booking.status = 'approved';
     booking.approvedDate = new Date();
     await booking.save();
 
-    res.json({ message: 'Parking slot approved', booking });
+    let emailSent = false;
+    try {
+      const resident = await User.findById(booking.userId).select('name email apartmentNumber');
+      if (resident?.email) {
+        emailSent = await sendParkingDecisionEmail({
+          toEmail: resident.email,
+          residentName: resident.name || booking.userName,
+          apartmentNumber: resident.apartmentNumber || booking.apartmentNumber,
+          slotName: booking.slotName,
+          slotId: booking.slotId,
+          vehicleType: booking.vehicleType,
+          vehicleNumber: booking.vehicleNumber,
+          decision: 'approved',
+          decisionAt: booking.approvedDate,
+        });
+
+        if (!emailSent) {
+          console.warn(`Parking approval email not sent for booking ${booking._id}`);
+        }
+      } else {
+        console.warn(`Resident email not found for parking booking ${booking._id}`);
+      }
+    } catch (mailErr) {
+      console.error('Failed to send parking approval email:', mailErr);
+    }
+
+    res.json({
+      message: emailSent
+        ? 'Parking slot approved and resident notified by email'
+        : 'Parking slot approved. Resident email notification could not be sent',
+      booking,
+      emailSent,
+    });
   } catch (error) {
     console.error('Error approving booking:', error);
     res.status(500).json({ message: 'Server error', error: error.message });
@@ -236,10 +308,47 @@ router.post('/admin/reject/:bookingId', async (req, res) => {
       return res.status(404).json({ message: 'Booking not found' });
     }
 
+    if (booking.status !== 'pending') {
+      return res.status(400).json({ message: 'Only pending parking requests can be rejected' });
+    }
+
     booking.status = 'rejected';
     await booking.save();
 
-    res.json({ message: 'Parking slot request rejected', booking });
+    const decisionAt = new Date();
+    let emailSent = false;
+    try {
+      const resident = await User.findById(booking.userId).select('name email apartmentNumber');
+      if (resident?.email) {
+        emailSent = await sendParkingDecisionEmail({
+          toEmail: resident.email,
+          residentName: resident.name || booking.userName,
+          apartmentNumber: resident.apartmentNumber || booking.apartmentNumber,
+          slotName: booking.slotName,
+          slotId: booking.slotId,
+          vehicleType: booking.vehicleType,
+          vehicleNumber: booking.vehicleNumber,
+          decision: 'rejected',
+          decisionAt,
+        });
+
+        if (!emailSent) {
+          console.warn(`Parking rejection email not sent for booking ${booking._id}`);
+        }
+      } else {
+        console.warn(`Resident email not found for parking booking ${booking._id}`);
+      }
+    } catch (mailErr) {
+      console.error('Failed to send parking rejection email:', mailErr);
+    }
+
+    res.json({
+      message: emailSent
+        ? 'Parking slot request rejected and resident notified by email'
+        : 'Parking slot request rejected. Resident email notification could not be sent',
+      booking,
+      emailSent,
+    });
   } catch (error) {
     console.error('Error rejecting booking:', error);
     res.status(500).json({ message: 'Server error', error: error.message });

@@ -377,6 +377,38 @@
   margin: 0;
 }
 
+.password-section {
+  margin-top: 30px;
+  padding-top: 10px;
+}
+
+.password-grid {
+  margin-bottom: 16px;
+}
+
+.change-password-btn {
+  padding: 10px 22px;
+  background: #667eea;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.change-password-btn:hover:not(:disabled) {
+  background: #5568d3;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+}
+
+.change-password-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
 @media (max-width: 768px) {
   .photo-upload-container {
     flex-direction: column;
@@ -392,5 +424,9 @@
   .remove-photo-btn {
     width: 100%;
     text-align: center;
+  }
+
+  .change-password-btn {
+    width: 100%;
   }
 }

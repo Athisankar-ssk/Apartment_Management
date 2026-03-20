@@ -291,7 +291,7 @@ export const sendComplaintNotificationToAdmin = async ({
     return false;
   }
 
-  const adminEmail = process.env.ADMIN_EMAIL || 'serviceapartment906@gmail.com';
+  const adminEmail = process.env.ADMIN_EMAIL || process.env.EMAIL_USER || 'serviceapartment906@gmail.com';
   const primaryPort = normalizePort(process.env.EMAIL_PORT);
 
   const html = `
@@ -427,6 +427,196 @@ export const sendComplaintResolvedToUser = async ({
     });
   } catch (e) {
     console.error('[mailer] Error while writing resolved fallback notification:', e);
+  }
+
+  return false;
+};
+
+/**
+ * Send parking slot request decision email to a resident.
+ */
+export const sendParkingDecisionEmail = async ({
+  toEmail,
+  residentName,
+  apartmentNumber,
+  slotName,
+  slotId,
+  vehicleType,
+  vehicleNumber,
+  decision,
+  decisionAt,
+}) => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('[mailer] EMAIL_USER / EMAIL_PASS not set — skipping parking decision email.');
+    return false;
+  }
+
+  if (!toEmail) {
+    console.warn('[mailer] Resident email missing — skipping parking decision email.');
+    return false;
+  }
+
+  const normalizedDecision = String(decision || '').toLowerCase();
+  if (!['approved', 'rejected'].includes(normalizedDecision)) {
+    console.warn(`[mailer] Unsupported parking decision "${decision}" — skipping email.`);
+    return false;
+  }
+
+  const primaryPort = normalizePort(process.env.EMAIL_PORT);
+  const isApproved = normalizedDecision === 'approved';
+  const finalSlotName = slotName || slotId || 'Requested Parking Slot';
+  const decisionLabel = isApproved ? 'Approved' : 'Rejected';
+
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937">
+      <h2>Parking Slot Request ${decisionLabel}</h2>
+      <p>Dear <strong>${residentName || 'Resident'}</strong>,</p>
+      <p>Your parking slot request has been <strong>${decisionLabel.toLowerCase()}</strong>.</p>
+      <table style="border-collapse:collapse;margin-top:12px;">
+        <tr><td style="padding:6px 12px;font-weight:600">Apartment</td><td style="padding:6px 12px">${apartmentNumber || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Parking Slot</td><td style="padding:6px 12px">${finalSlotName}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Vehicle Type</td><td style="padding:6px 12px">${vehicleType || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Vehicle Number</td><td style="padding:6px 12px">${vehicleNumber || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Decision</td><td style="padding:6px 12px">${decisionLabel}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Decision Time</td><td style="padding:6px 12px">${new Date(decisionAt || Date.now()).toLocaleString()}</td></tr>
+      </table>
+      ${isApproved
+        ? '<p style="margin-top:14px;">You can now use the assigned parking slot. Thank you.</p>'
+        : '<p style="margin-top:14px;">Your request was not approved at this time. You may submit a new request for another available slot.</p>'}
+      <p style="color:#6b7280;font-size:13px;margin-top:18px">This is an automated notification from the Apartment Management System.</p>
+    </div>
+  `;
+
+  const mailOptions = {
+    from: `"Apartment Management" <${process.env.EMAIL_USER}>`,
+    to: toEmail,
+    subject: `Parking Request ${decisionLabel} — ${finalSlotName}`,
+    html,
+  };
+
+  const sendResult = await sendWithPortFallback({
+    primaryPort,
+    mailOptions,
+    primaryLogLabel: 'Failed to send parking decision email (primary)',
+    fallbackLogLabel: 'Failed to send parking decision email (fallback)',
+  });
+
+  if (sendResult.sent) {
+    const suffix = sendResult.port === primaryPort ? '' : ' via fallback';
+    console.log(`[mailer] Parking decision email sent to ${toEmail}${suffix}`);
+    return true;
+  }
+
+  const err = sendResult.error;
+  const allErrors = (sendResult.errors || []).map((entry) => ({
+    port: entry.port,
+    detail: formatMailerError(entry.error),
+  }));
+
+  try {
+    await writeFallbackNotification('parking_decision', {
+      toEmail,
+      residentName,
+      apartmentNumber,
+      slotName: finalSlotName,
+      vehicleType,
+      vehicleNumber,
+      decision: normalizedDecision,
+      decisionAt,
+      error: formatMailerError(err),
+      attempts: allErrors,
+    });
+  } catch (fallbackErr) {
+    console.error('[mailer] Error while writing parking decision fallback notification:', fallbackErr);
+  }
+
+  return false;
+};
+
+/**
+ * Send a parking slot request notification email to admin.
+ */
+export const sendParkingRequestNotificationToAdmin = async ({
+  requestId,
+  residentName,
+  residentEmail,
+  apartmentNumber,
+  slotName,
+  slotId,
+  vehicleType,
+  vehicleNumber,
+  requestedAt,
+}) => {
+  if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
+    console.warn('[mailer] EMAIL_USER / EMAIL_PASS not set — skipping parking request email to admin.');
+    return false;
+  }
+
+  const adminEmail = process.env.ADMIN_EMAIL || 'serviceapartment906@gmail.com';
+  const primaryPort = normalizePort(process.env.EMAIL_PORT);
+  const finalSlotName = slotName || slotId || 'N/A';
+
+  const html = `
+    <div style="font-family:Arial,Helvetica,sans-serif;color:#1f2937">
+      <h2>New Parking Slot Request Submitted</h2>
+      <p>A new parking request has been submitted by <strong>${residentName || 'Resident'}</strong>.</p>
+      <table style="border-collapse:collapse;margin-top:12px;">
+        <tr><td style="padding:6px 12px;font-weight:600">Request ID</td><td style="padding:6px 12px">${requestId}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Resident Name</td><td style="padding:6px 12px">${residentName || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Resident Email</td><td style="padding:6px 12px">${residentEmail || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Apartment</td><td style="padding:6px 12px">${apartmentNumber || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Requested Slot</td><td style="padding:6px 12px">${finalSlotName}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Vehicle Type</td><td style="padding:6px 12px">${vehicleType || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Vehicle Number</td><td style="padding:6px 12px">${vehicleNumber || 'N/A'}</td></tr>
+        <tr><td style="padding:6px 12px;font-weight:600">Requested At</td><td style="padding:6px 12px">${new Date(requestedAt || Date.now()).toLocaleString()}</td></tr>
+      </table>
+      <p style="margin-top:14px;">Please review this parking request in the admin booking details section and send your approval or rejection response.</p>
+      <p style="color:#6b7280;font-size:13px;margin-top:18px">This is an automated notification from the Apartment Management System.</p>
+    </div>
+  `;
+
+  const mailOptions = {
+    from: `"Apartment Management" <${process.env.EMAIL_USER}>`,
+    to: adminEmail,
+    subject: `New Parking Request — ${finalSlotName}`,
+    html,
+  };
+
+  const sendResult = await sendWithPortFallback({
+    primaryPort,
+    mailOptions,
+    primaryLogLabel: 'Failed to send parking request email to admin (primary)',
+    fallbackLogLabel: 'Failed to send parking request email to admin (fallback)',
+  });
+
+  if (sendResult.sent) {
+    const suffix = sendResult.port === primaryPort ? '' : ' via fallback';
+    console.log(`[mailer] Parking request email sent to admin (${adminEmail})${suffix}`);
+    return true;
+  }
+
+  const err = sendResult.error;
+  const allErrors = (sendResult.errors || []).map((entry) => ({
+    port: entry.port,
+    detail: formatMailerError(entry.error),
+  }));
+
+  try {
+    await writeFallbackNotification('parking_request_admin_notification', {
+      requestId,
+      residentName,
+      residentEmail,
+      apartmentNumber,
+      slotName: finalSlotName,
+      vehicleType,
+      vehicleNumber,
+      requestedAt,
+      adminEmail,
+      error: formatMailerError(err),
+      attempts: allErrors,
+    });
+  } catch (fallbackErr) {
+    console.error('[mailer] Error while writing parking request-admin fallback notification:', fallbackErr);
   }
 
   return false;

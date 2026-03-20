@@ -95,7 +95,12 @@ function VehicleParkingSlotBooking() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
 
-      setMessage({ type: "success", text: "Parking slot requested successfully! Waiting for admin approval." });
+      setMessage({
+        type: "success",
+        text:
+          res.data?.message ||
+          "Parking slot requested successfully! Admin will review it and send the decision to your email.",
+      });
       setSelectedSlot(null);
       setVehicleNumber("");
       setVehicleType("");
@@ -311,7 +316,7 @@ function VehicleParkingSlotBooking() {
                       }}>
                         <strong>⏳ Pending Approval</strong>
                         <p style={{ margin: "0.5rem 0 0 0", fontSize: "0.9rem" }}>
-                          Your parking slot request is under admin review. You will be notified once it's approved or rejected.
+                          Your parking slot request is under admin review. You will receive an email once it is approved or rejected.
                         </p>
                       </div>
                     )}

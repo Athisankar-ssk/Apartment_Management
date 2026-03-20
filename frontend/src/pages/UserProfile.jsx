@@ -14,6 +14,12 @@ function UserProfile() {
   const [errorMessage, setErrorMessage] = useState("");
   const [photoPreview, setPhotoPreview] = useState(null);
   const [photoFile, setPhotoFile] = useState(null);
+  const [changingPassword, setChangingPassword] = useState(false);
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: "",
+    newPassword: "",
+    confirmNewPassword: "",
+  });
 
   useEffect(() => {
     const token = localStorage.getItem("userToken");
@@ -188,6 +194,77 @@ function UserProfile() {
       } else {
         setTimeout(() => setErrorMessage(""), 5000);
       }
+    }
+  };
+
+  const handlePasswordInputChange = (e) => {
+    const { name, value } = e.target;
+    setPasswordData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleChangePassword = async (e) => {
+    e.preventDefault();
+
+    setSuccessMessage("");
+    setErrorMessage("");
+
+    if (!passwordData.currentPassword || !passwordData.newPassword || !passwordData.confirmNewPassword) {
+      setErrorMessage("Please fill in all password fields");
+      setTimeout(() => setErrorMessage(""), 4000);
+      return;
+    }
+
+    if (passwordData.newPassword !== passwordData.confirmNewPassword) {
+      setErrorMessage("New password and confirm password do not match");
+      setTimeout(() => setErrorMessage(""), 4000);
+      return;
+    }
+
+    if (passwordData.newPassword.length < 6) {
+      setErrorMessage("New password must be at least 6 characters long");
+      setTimeout(() => setErrorMessage(""), 4000);
+      return;
+    }
+
+    try {
+      const token = localStorage.getItem("userToken");
+      if (!token) {
+        setErrorMessage("You are not logged in. Please log in again.");
+        setTimeout(() => navigate("/user/login"), 2000);
+        return;
+      }
+
+      setChangingPassword(true);
+      const res = await axios.put(
+        "http://localhost:5000/api/user/change-password",
+        passwordData,
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
+      setSuccessMessage(res.data?.message || "Password changed successfully");
+      setPasswordData({
+        currentPassword: "",
+        newPassword: "",
+        confirmNewPassword: "",
+      });
+      setTimeout(() => setSuccessMessage(""), 4000);
+    } catch (err) {
+      const errorMsg = err.response?.data?.message || "Failed to change password";
+      setErrorMessage(errorMsg);
+
+      if (err.response?.status === 401) {
+        setTimeout(() => {
+          localStorage.clear();
+          navigate("/user/login");
+        }, 2000);
+      } else {
+        setTimeout(() => setErrorMessage(""), 5000);
+      }
+    } finally {
+      setChangingPassword(false);
     }
   };
 
@@ -441,6 +518,56 @@ function UserProfile() {
                 </div>
               </div>
             </form>
+
+            <div className="password-section">
+              <div className="section-header">
+                <h2>Change Password</h2>
+              </div>
+
+              <form onSubmit={handleChangePassword} className="profile-form">
+                <div className="form-grid password-grid">
+                  <div className="form-group">
+                    <label>Current Password</label>
+                    <input
+                      type="password"
+                      name="currentPassword"
+                      value={passwordData.currentPassword}
+                      onChange={handlePasswordInputChange}
+                      autoComplete="current-password"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>New Password</label>
+                    <input
+                      type="password"
+                      name="newPassword"
+                      value={passwordData.newPassword}
+                      onChange={handlePasswordInputChange}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label>Confirm New Password</label>
+                    <input
+                      type="password"
+                      name="confirmNewPassword"
+                      value={passwordData.confirmNewPassword}
+                      onChange={handlePasswordInputChange}
+                      autoComplete="new-password"
+                      required
+                    />
+                  </div>
+                </div>
+
+                <button type="submit" className="change-password-btn" disabled={changingPassword}>
+                  {changingPassword ? "Updating Password..." : "Update Password"}
+                </button>
+              </form>
+            </div>
           </div>
         </div>
       </div>

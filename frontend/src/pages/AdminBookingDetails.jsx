@@ -179,11 +179,12 @@ function AdminBookingDetails() {
   const handleApproveVehicleParking = async (bookingId) => {
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.post(
+      const res = await axios.post(
         `http://localhost:5000/api/parking/admin/approve/${bookingId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      alert(res.data?.message || "Parking request approved");
       fetchAllBookings();
     } catch (error) {
       console.error("Error approving parking request:", error);
@@ -197,11 +198,12 @@ function AdminBookingDetails() {
     }
     try {
       const token = localStorage.getItem("adminToken");
-      await axios.post(
+      const res = await axios.post(
         `http://localhost:5000/api/parking/admin/reject/${bookingId}`,
         {},
         { headers: { Authorization: `Bearer ${token}` } }
       );
+      alert(res.data?.message || "Parking request rejected");
       fetchAllBookings();
     } catch (error) {
       console.error("Error rejecting parking request:", error);

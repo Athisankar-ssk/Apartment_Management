@@ -58,11 +58,11 @@ function ElectricityComplaint() {
       <UserNavbar />
       <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
-          <h1>Electricity Complaint</h1>
+          <h1>Electricity Grievance</h1>
         </header>
 
         <div className="create-card card">
-          <h3>Register Electricity Complaint</h3>
+          <h3>Register Electricity Grievance</h3>
           
           {message && (
             <div className={isError ? "error-message" : "success-message"}>

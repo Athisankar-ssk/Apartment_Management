@@ -66,7 +66,7 @@ function ComplaintStatus() {
       <UserNavbar />
       <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
-          <h1>My Complaint Status</h1>
+          <h1>My Grievance Status</h1>
         </header>
 
         <section style={{ marginTop: "2rem" }}>

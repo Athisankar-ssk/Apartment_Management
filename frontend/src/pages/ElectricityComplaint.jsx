@@ -119,7 +119,7 @@ function ElectricityComplaint() {
                   Cancel
                 </button>
                 <button type="submit" className="btn primary">
-                  Submit Complaint
+                  Submit Grievance
                 </button>
               </div>
             </div>

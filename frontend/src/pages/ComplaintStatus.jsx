@@ -72,11 +72,11 @@ function ComplaintStatus() {
         <section style={{ marginTop: "2rem" }}>
           {loading ? (
             <div className="card">
-              <p style={{ textAlign: "center", color: "#64748b" }}>Loading complaints...</p>
+              <p style={{ textAlign: "center", color: "#64748b" }}>Loading Grievance...</p>
             </div>
           ) : complaints.length === 0 ? (
             <div className="card">
-              <p style={{ textAlign: "center", color: "#64748b" }}>No complaints submitted yet</p>
+              <p style={{ textAlign: "center", color: "#64748b" }}>No Grievance submitted yet</p>
             </div>
           ) : (
             <div className="complaints-grid">

@@ -49,7 +49,7 @@ const vehicleParkingSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient querying
+
 vehicleParkingSchema.index({ userId: 1, status: 1 });
 vehicleParkingSchema.index({ slotId: 1 });
 

@@ -9,9 +9,9 @@ const courierNotificationSchema = new mongoose.Schema(
       enum: ["Package", "Letter", "Document", "Food Delivery", "Grocery", "Other"],
       required: true,
     },
-    courierFrom: { type: String, default: "" },       // sender / company e.g. Amazon, FedEx
-    description: { type: String, default: "" },        // optional extra notes
-    notifiedBy: { type: String, required: true },      // security officer name
+    courierFrom: { type: String, default: "" },     
+    description: { type: String, default: "" },        
+    notifiedBy: { type: String, required: true },      
     securityId: { type: String, required: true },
     status: {
       type: String,

@@ -8,7 +8,8 @@ const userSchema = new mongoose.Schema({
   apartmentNumber: String,
   password: String,
   mobile: String,
-  // Profile fields
+ 
+  
   dateOfBirth: Date,
   gender: { type: String, enum: ['Male', 'Female', 'Other', ''] },
   alternateMobile: String,

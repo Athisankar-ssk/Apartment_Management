@@ -53,7 +53,7 @@ const meetingHallBookingSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient querying
+
 meetingHallBookingSchema.index({ date: 1, startTime: 1, endTime: 1 });
 
 export default mongoose.model('MeetingHallBooking', meetingHallBookingSchema);

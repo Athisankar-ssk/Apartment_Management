@@ -42,7 +42,7 @@ const partyHallBookingSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient querying
+
 partyHallBookingSchema.index({ date: 1, timeSlot: 1 });
 partyHallBookingSchema.index({ userId: 1, date: 1 });
 

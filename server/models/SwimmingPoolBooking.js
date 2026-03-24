@@ -49,7 +49,7 @@ const swimmingPoolBookingSchema = new mongoose.Schema({
   }
 });
 
-// Index for efficient querying
+
 swimmingPoolBookingSchema.index({ date: 1, startTime: 1, endTime: 1 });
 
 export default mongoose.model('SwimmingPoolBooking', swimmingPoolBookingSchema);

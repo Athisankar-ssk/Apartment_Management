@@ -126,7 +126,7 @@ router.patch("/:id/status", verifyToken, async (req, res) => {
       return res.status(404).json({ message: "Complaint not found" });
     }
 
-    // If status changed to 'resolved', notify the resident (best-effort)
+    // If status changed to 'resolved', notify the resident 
     try {
       if (String(status).toLowerCase() === "resolved") {
         const user = complaint.userId;

@@ -78,7 +78,7 @@ function Navbar() {
                   Create Account
                 </Link>
                 <Link to="/complaints" onClick={handleNavClick} className={`nav-link ${location.pathname === '/complaints' ? 'active' : ''}`}>
-                  Complaints
+                  Grievance
                 </Link>
                 <Link to="/admin/booking-details" onClick={handleNavClick} className={`nav-link ${location.pathname === '/admin/booking-details' ? 'active' : ''}`}>
                   Booking Details
@@ -96,7 +96,7 @@ function Navbar() {
                   Dashboard
                 </Link>
                 <Link to="/complaints" onClick={handleNavClick} className={`nav-link ${location.pathname === '/complaints' ? 'active' : ''}`}>
-                  Complaints
+                  Dashboard
                 </Link>
               </>
             )}

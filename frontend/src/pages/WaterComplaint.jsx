@@ -45,11 +45,11 @@ function WaterComplaint() {
       <UserNavbar />
       <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
-          <h1>Water Complaint</h1>
+          <h1>Water Grievance</h1>
         </header>
 
         <div className="create-card card">
-          <h3>Register Water Complaint</h3>
+          <h3>Register Water Grievance</h3>
           
           {message && (
             <div className={isError ? "error-message" : "success-message"}>
@@ -106,7 +106,7 @@ function WaterComplaint() {
                   Cancel
                 </button>
                 <button type="submit" className="btn primary">
-                  Submit Complaint
+                  Submit Grievance
                 </button>
               </div>
             </div>

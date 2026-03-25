@@ -31,7 +31,7 @@ function CleaningComplaint() {
         formData,
         { headers: { Authorization: `Bearer ${token}` } }
       );
-      setMessage("Complaint registered successfully!");
+      setMessage("Grievance registered successfully!");
       setIsError(false);
       setFormData({ category: "Cleaning", subject: "", description: "", urgency: "medium" });
     } catch (err) {
@@ -45,11 +45,11 @@ function CleaningComplaint() {
       <UserNavbar />
       <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
-          <h1>Cleaning Complaint</h1>
+          <h1>Cleaning Grievance</h1>
         </header>
 
         <div className="create-card card">
-          <h3>Register Cleaning Complaint</h3>
+          <h3>Register Cleaning Grievance</h3>
           
           {message && (
             <div className={isError ? "error-message" : "success-message"}>
@@ -106,7 +106,7 @@ function CleaningComplaint() {
                   Cancel
                 </button>
                 <button type="submit" className="btn primary">
-                  Submit Complaint
+                  Submit Grievance
                 </button>
               </div>
             </div>

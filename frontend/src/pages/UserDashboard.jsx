@@ -23,14 +23,14 @@ function UserDashboard() {
       accent: "#f97316"
     },
     {
-      title: "Complaints",
+      title: " Grievances",
       description: "Submit and track grievances about facilities or services",
       icon: "⚠️",
       path: "/user/grievance/electricity",
       accent: "#ef4444"
     },
     {
-      title: "Complaint Status",
+      title: " Grievances Status",
       description: "Check the status of your submitted complaints",
       icon: "✅",
       path: "/user/services/complaint-status",
@@ -169,7 +169,7 @@ function UserDashboard() {
             >
               <h3 style={{ margin: "0 0 0.75rem", color: "#1e293b", fontSize: "1.1rem" }}>🚨 Report Issues</h3>
               <p style={{ margin: 0, color: "#64748b", fontSize: "0.95rem", lineHeight: "1.6" }}>
-                Found a problem? Use the complaints section to report maintenance or facility issues immediately.
+                Found a problem? Use the  Grievances section to report maintenance or facility issues immediately.
               </p>
             </div>
           </div>

@@ -84,7 +84,7 @@ function ComplaintDetails() {
       <>
         <Navbar />
         <div className="admin-dashboard">
-          <p>Complaint not found</p>
+          <p> Grievance not found</p>
         </div>
       </>
     );
@@ -95,7 +95,7 @@ function ComplaintDetails() {
       <Navbar />
       <div className="admin-dashboard">
         <header className="admin-header">
-          <h1>Complaint Details</h1>
+          <h1>Grievance Details</h1>
           <button className="btn outline" onClick={() => navigate("/admin/dashboard")}>
             Back to Dashboard
           </button>
@@ -108,7 +108,7 @@ function ComplaintDetails() {
         <div className="complaint-details-container">
           <div className="card" style={{ marginBottom: "1.5rem" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "1.5rem" }}>
-              <h3>Complaint Information</h3>
+              <h3> Grievances Information</h3>
               <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
                 <span className="complaint-category">{complaint.category}</span>
                 <span 

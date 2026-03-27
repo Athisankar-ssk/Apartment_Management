@@ -13,13 +13,13 @@ function SecurityDashboard() {
   const [stats, setStats] = useState({ activeVisitors: 0, todayEntries: 0, parkedVehicles: 0 });
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  // Live clock
+ 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
 
-  // Fetch live stats
+  
   useEffect(() => {
     const fetchStats = async () => {
       try {

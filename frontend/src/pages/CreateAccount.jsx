@@ -7,7 +7,7 @@ import "./AdminDashboard.css";
 function CreateAccount() {
   const navigate = useNavigate();
 
-  const [accountType, setAccountType] = useState("user"); // "user" or "security"
+  const [accountType, setAccountType] = useState("user"); 
   const [form, setForm] = useState({ name: "", email: "", userId: "", apartmentNumber: "", password: "", mobile: "" });
   const [securityForm, setSecurityForm] = useState({ securityId: "", name: "", email: "", password: "", phoneNumber: "" });
   const [floor, setFloor] = useState("");
@@ -18,10 +18,10 @@ function CreateAccount() {
   const [touched, setTouched] = useState({});
   const [occupiedRooms, setOccupiedRooms] = useState(new Set());
 
-  // Generate floors A-J (10 floors)
+  
   const floors = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J'];
   
-  // Generate rooms 01-10 (10 rooms per floor)
+  
   const rooms = Array.from({ length: 10 }, (_, i) => String(i + 1).padStart(2, '0'));
 
   useEffect(() => {
@@ -36,7 +36,7 @@ function CreateAccount() {
         { headers: { Authorization: `Bearer ${token}` } }
       );
       
-      // Extract apartment numbers and create a Set of occupied room IDs
+      // extract apartment numbers and create a Set of occupied room IDs
       const occupied = new Set();
       res.data.forEach(user => {
         if (user.apartmentNumber) {
@@ -92,7 +92,7 @@ function CreateAccount() {
     // Update apartment number and userId if both floor and room are selected
     if (selectedFloor && room) {
       const apartmentNumber = `AUM-${selectedFloor}${selectedFloor.charCodeAt(0) - 64}${room}`;
-      const userId = apartmentNumber; // Use apartment number as user ID
+      const userId = apartmentNumber; 
       setForm({ ...form, apartmentNumber, userId });
     }
   };
@@ -164,7 +164,7 @@ function CreateAccount() {
       setRoom("");
       setErrors({});
       setTouched({});
-      // Refresh occupied rooms list
+     
       fetchOccupiedRooms();
     } catch (err) {
       const msg = err?.response?.data?.message || "Error creating user";

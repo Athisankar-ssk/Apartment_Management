@@ -58,7 +58,7 @@ function Complaints() {
       <Navbar />
       <div className="admin-dashboard user-grievance--page">
         <header className="admin-header">
-          <h1>All Complaints</h1>
+          <h1>All Grievances</h1>
           <div style={{ display: "flex", gap: "0.5rem" }}>
             <select 
               className="form-input" 
@@ -77,7 +77,7 @@ function Complaints() {
 
         {loading ? (
           <div className="card">
-            <p style={{ textAlign: "center", color: "#64748b" }}>Loading complaints...</p>
+            <p style={{ textAlign: "center", color: "#64748b" }}>Loading Grievances...</p>
           </div>
         ) : filteredComplaints.length === 0 ? (
           <div className="card">
